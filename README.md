@@ -1,7 +1,7 @@
 <p align="center">
     <img width="350" src="/img/logo-h.png">
     <br><br>
-    <a href="https://discord.gg/GX6vsEeZ6X"><img alt="ChessMint V2 discord!" src="https://img.shields.io/badge/Discord-ChessMint-0?style=flat&logo=discord"></a>
+    <a href="https://discord.gg/GX6vsEeZ6X"><img alt="ChessMint V2 discord!" src="https://img.shields.io/badge/Discord-ChessMintV2-0?style=flat&logo=discord"></a>
     <a href="https://github.com/BotSolver/ChessMintV2/releases"><img alt="Download ChessMint V2" src="https://img.shields.io/github/downloads/BotSolver/ChessMintV2/total?color=%2331c754&label=Download&logo=googlechrome&logoColor=%23ffffff"></a>
 </p>
 
