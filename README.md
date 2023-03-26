@@ -27,7 +27,7 @@ This extension is for any browser you can import a extension into!
 
 You must install it manually by following the steps below:
 
-- Download the extension and extract it: [v1.0.0](https://github.com/BotSolver/ChessMintV2/releases/download/v1.4.0/ChessMintV2.zip)
+- Download the extension and extract it: [v1.4.0](https://github.com/BotSolver/ChessMintV2/releases/download/v1.4.0/ChessMintV2.zip)
 - Go to the Extensions page by entering `chrome://extensions` in a new tab, or go to the `Manage extensions` page.
 - On the top right corner, you should see an option named `Developer mode`, enable it.
 - A button named `Load unpacked` will show up in the top left corner, click it.
