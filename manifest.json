@@ -1,0 +1,45 @@
+{
+    "manifest_version": 3,
+    "name": "ChessMint - Edited With Love (Mist.#9999)",
+    "short_name": "ChessMint v1.4.0",
+    "icons": {
+        "16": "img/logo-16.png",
+        "48": "img/logo-48.png",
+        "128": "img/logo-128.png"
+    },
+    "version": "1.4.0",
+    "description": "Help you with chess. (Edited by Mist.#9999)",
+    "content_scripts": [
+        {
+            "js": [
+                "js/loader.js"
+            ],
+            "css": [
+                "css/depthbar.css",
+                "css/evalbar.css",
+                "css/material-icon.css"
+            ],
+            "matches": [
+                "https://www.chess.com/*"
+            ],
+            "run_at": "document_start"
+        }
+    ],
+    "action": {
+        "default_popup": "html/options.html"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "js/chessmint.js"
+            ],
+            "matches": [
+                "https://www.chess.com/*"
+            ]
+        }
+    ],
+    "permissions": [
+        "tabs",
+        "storage"
+    ]
+}
