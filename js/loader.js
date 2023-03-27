@@ -25,14 +25,14 @@ function injectScript(file) {
 }
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     // pass the event to injected script
-    window.dispatchEvent(new CustomEvent("ChessMintUpdateOptions", { detail: request.data }));
+    window.dispatchEvent(new CustomEvent("BetterMintUpdateOptions", { detail: request.data }));
 });
-window.addEventListener("ChessMintGetOptions", function (evt) {
+window.addEventListener("BetterMintGetOptions", function (evt) {
     chrome.storage.sync.get(DefaultExtensionOptions2, function (opts) {
         let request = evt.detail;
         let response = { requestId: request.id, data: opts };
-        window.dispatchEvent(new CustomEvent("ChessMintSendOptions", { detail: response }));
+        window.dispatchEvent(new CustomEvent("BetterMintSendOptions", { detail: response }));
     });
 });
-injectScript("js/chessmint.js");
+injectScript("js/bettermint.js");
 //# sourceMappingURL=loader.js.map
