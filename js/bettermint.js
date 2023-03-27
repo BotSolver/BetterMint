@@ -641,19 +641,19 @@ class StockfishEngine {
         });
     }
 }
-class ChessMint {
+class BetterMint {
     constructor(chessboard, options) {
         this.options = options;
         this.game = new GameController(this, chessboard);
         this.engine = new StockfishEngine(this);
-        window.addEventListener("ChessMintUpdateOptions", (event) => {
+        window.addEventListener("BetterMintUpdateOptions", (event) => {
             this.options = event.detail;
             this.game.UpdateExtensionOptions();
             this.engine.UpdateExtensionOptions();
             // show a notification when the settings is updated, but only if the previous notification has gone.
-            if (window.toaster && window.toaster.notifications.findIndex((noti) => noti.id == "chessmint-settings-updated") == -1) {
+            if (window.toaster && window.toaster.notifications.findIndex((noti) => noti.id == "bettermint-settings-updated") == -1) {
                 window.toaster.add({
-                    id: "chessmint-settings-updated",
+                    id: "bettermint-settings-updated",
                     duration: 2000,
                     icon: "circle-gearwheel",
                     content: `Settings updated!`,
@@ -667,7 +667,7 @@ class ChessMint {
                 id: "chess.com",
                 duration: 3000,
                 icon: "circle-info",
-                content: `ChessMint is enabled!`,
+                content: `BetterMint is enabled!`,
             });
         }
     }
@@ -680,18 +680,18 @@ var ChromeRequest = (function () {
             var listener = function (evt) {
                 if (evt.detail.requestId == id) {
                     // Deregister self
-                    window.removeEventListener("ChessMintSendOptions", listener);
+                    window.removeEventListener("BetterMintSendOptions", listener);
                     resolve(evt.detail.data);
                 }
             };
-            window.addEventListener("ChessMintSendOptions", listener);
+            window.addEventListener("BetterMintSendOptions", listener);
             var payload = { data: data, id: id };
-            window.dispatchEvent(new CustomEvent("ChessMintGetOptions", { detail: payload }));
+            window.dispatchEvent(new CustomEvent("BetterMintGetOptions", { detail: payload }));
         });
     }
     return { getData: getData };
 })();
-function InitChessMint(chessboard) {
+function InitBetterMint(chessboard) {
     fetch(Config.pathToEcoJson).then(function (response) {
         return __awaiter(this, void 0, void 0, function* () {
             let table = yield response.json();
@@ -701,7 +701,7 @@ function InitChessMint(chessboard) {
     // get the extension option first
     ChromeRequest.getData().then(function (options) {
         try {
-            master = new ChessMint(chessboard, options);
+            master = new BetterMint(chessboard, options);
         }
         catch (e) {
             console.error(e);
@@ -713,7 +713,7 @@ customElements.whenDefined("chess-board").then(function (ctor) {
     ctor.prototype._createGame = ctor.prototype.createGame;
     ctor.prototype.createGame = function (e) {
         let result = this._createGame(e);
-        InitChessMint(this);
+        InitBetterMint(this);
         return result;
     };
 });
