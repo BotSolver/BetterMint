@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Test Extension Options</title>
+    <title>Mist.#9999 BetterMint</title>
     <link rel="stylesheet" type="text/css" href="../css/options.css">
     <link rel="stylesheet" type="text/css" href="../css/material-icon.css">
+    <link rel="stylesheet" href="../css/evalvaluetext.css">
+    <script src="../js/bettermint.js"></script>
+    
     <script src="../js/options.js"></script>
     <style>
         .options-slider {
@@ -48,12 +51,12 @@
 </head>
 <body>
     <div class="header-logo">
-        <img src="..img/logo-big.png" alt="BetterMint" class="main-logo">
+        <img src="../img/logo-h.png" alt="BetterMint" class="main-logo">
     </div>
     <div class="container">
 
         <div>
-            <p style="text-align:center;"><a href="https://pastebin.com/raw/QvG2ghfe" target="_blank"></a> <a style="color:blue;margin-left:10px;margin-right:10px;" id="link1" target="_blank" href="https://pastebin.com/raw/QvG2ghfe">Press Here To Learn More!</a></p>
+            <p style="text-align:center;"><a href="https://pastebin.com/raw/QvG2ghfe" target="_blank"></a> <a style="color:blue;margin-left:10px;margin-right:10px;" id="link1" target="_blank" href="https://pastebin.com/raw/nsD8mrMR">Press Here To Learn More!</a></p>
         </div>
 
         <div class="options-slider" data-min="1" data-max="50">
@@ -116,8 +119,28 @@
                 </div>
             </label>
         </div>
+          
+          <div class="options-checkbox">
+            <input id="option-text-to-speech" type="checkbox" />
+            <label for="option-text-to-speech">Text To Speech
+              <div class="tooltip">
+                <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
+                <span class="tooltiptext">Tell's you the best move.</span>
+              </div>
+            </label>
+          </div>
 
-        <div class="options-checkbox">
+          <div class="options-checkbox">
+            <input id="option-auto-new-game" type="checkbox" />
+            <label for="option-auto-new-game">Auto New Game
+              <div class="tooltip">
+                <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
+                <span class="tooltiptext">Auto Queue For Next Game.</span>
+              </div>
+            </label>
+          </div>      
+
+          <div class="options-checkbox">
             <input id="option-legit-auto-move" type="checkbox" />
             <label for="option-legit-auto-move">Legit Auto Move
                 <div class="tooltip">

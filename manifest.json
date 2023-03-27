@@ -1,13 +1,13 @@
 {
     "manifest_version": 3,
-    "name": "BetterMint",
-    "short_name": "BetterMint v1.4.0",
+    "name": "BetterMint - v1.5.0",
+    "short_name": "BetterMint v1.5.0",
     "icons": {
         "16": "img/logo-16.png",
         "48": "img/logo-48.png",
         "128": "img/logo-128.png"
     },
-    "version": "1.4.0",
+    "version": "1.5.0",
     "description": "Help you with chess.",
     "content_scripts": [
         {

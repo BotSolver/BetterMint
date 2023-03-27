@@ -10,6 +10,7 @@ const DefaultExtensionOptions2 = {
     random_best_move: false,
     legit_auto_move: false,
     show_hints: true,
+    text_to_speech: false,
     move_analysis: true,
     depth_bar: true,
     evaluation_bar: true,

@@ -12,6 +12,7 @@ var inputMaxLegitAutoMoveDepth;
 var inputShowHints;
 var inputMoveAnalysis;
 var inputDepthBar;
+var inputTextToSpeech;
 var inputEvalBar;
 var inputUseNNUE;
 
@@ -26,6 +27,7 @@ const DefaultExtensionOptions = {
     random_best_move: false,
     legit_auto_move: false,
     show_hints: true,
+    text_to_speech: false,
     move_analysis: true,
     depth_bar: true,
     evaluation_bar: true,
@@ -87,6 +89,9 @@ function RestoreOptions() {
         if (inputRandomBestMove !== null && inputRandomBestMove.checked !== undefined) {
             inputRandomBestMove.checked = options.random_best_move;
         }
+        if (inputTextToSpeech !== null && inputTextToSpeech.checked !== undefined) {
+            inputTextToSpeech.checked = options.text_to_speech;
+        }
         if (inputMoveAnalysis !== null && inputMoveAnalysis.checked !== undefined) {
             inputMoveAnalysis.checked = options.move_analysis;
         }
@@ -114,6 +119,7 @@ function OnOptionsChange() {
         show_hints: inputShowHints.checked,
         legit_auto_move: inputLegitAutoMove.checked,
         random_best_move: inputRandomBestMove.checked,
+        text_to_speech: inputTextToSpeech.checked,
         move_analysis: inputMoveAnalysis.checked,
         depth_bar: inputDepthBar.checked,
         evaluation_bar: inputEvalBar.checked,
@@ -138,6 +144,7 @@ function InitOptions() {
     inputLegitAutoMove = document.getElementById("option-legit-auto-move");
     inputRandomBestMove = document.getElementById("option-random-best-move");
     inputShowHints = document.getElementById("option-show-hints");
+    inputTextToSpeech = document.getElementById("option-text-to-speech");
     inputMoveAnalysis = document.getElementById("option-move-analysis");
     inputDepthBar = document.getElementById("option-depth-bar");
     inputEvalBar = document.getElementById("option-evaluation-bar");
@@ -166,7 +173,7 @@ function InitOptions() {
             if (!event.disableUpdate)
                 OnOptionsChange();
         });
-    });
+    });    
     document.querySelectorAll(".options-checkbox").forEach(function (checkbox) {
         checkbox.addEventListener("change", function () {
             OnOptionsChange();

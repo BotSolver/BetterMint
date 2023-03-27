@@ -38,17 +38,20 @@ class GameController {
         this.currentMarkings = [];
         let self = this;
 
+        // Listen for the Move event
         this.controller.on('Move', (event) => {
             console.log("On Move", event.data);
             this.UpdateEngine(false);
         });
-        // check if a new game has started
+
+        // Listen for the ModeChanged event
         this.controller.on('ModeChanged', (event) => {
             if (event.data === "playing") {
                 // at this point, the fen notation isn't updated yet, we should delay this
                 setTimeout(() => { this.ResetGame(); }, 100);
             }
         });
+      
         // flip the evaluation board
         this.controller.on('UpdateOptions', (event) => {
             this.options = this.controller.getOptions();
@@ -62,6 +65,7 @@ class GameController {
         this.CreateAnalysisTools();
         setTimeout(() => { this.ResetGame(); }, 100);
     }
+
     UpdateExtensionOptions() {
         let options = this.master.options;
         if (options.evaluation_bar && this.evalBar == null)
@@ -164,7 +168,7 @@ class GameController {
             topMoves.forEach((move, idx) => {
                 // isBestMove means final evaluation, don't include the moves
                 // that has less depth than the best move
-                if (isBestMove && move.depth != bestMove.depth)
+                if (isBestMove && (!move || move.depth != bestMove.depth))
                     return;
                 let color = (idx == 0) ? this.options.arrowColors.default : this.options.arrowColors.alt;
                 this.currentMarkings.push({
@@ -195,15 +199,15 @@ class GameController {
             this.controller.markings.addMany(this.currentMarkings);
         }
         if (options.depth_bar) {
-            this.SetCurrentDepth(isBestMove ? bestMove.depth : (bestMove.depth - 1));
+            this.SetCurrentDepth(isBestMove ? (bestMove ? bestMove.depth : 0) : ((bestMove ? bestMove.depth : 0) - 1));
         }
         if (options.evaluation_bar) {
-            let score = bestMove.mate || bestMove.cp;
+            let score = bestMove && bestMove.mate !== undefined ? bestMove.mate : bestMove && bestMove.cp !== undefined ? bestMove.cp : 0;
             if (this.controller.getTurn() == 2)
                 score *= -1;
-            this.SetEvaluation(score, bestMove.mate != null);
+                this.SetEvaluation(score, bestMove && bestMove.mate != null);
         }
-    }
+    }  
     SetCurrentDepth(percent) {
         if (this.depthBar == null)
             return;
@@ -251,6 +255,7 @@ class GameController {
         this.evalScoreAbbreviated.classList.add(classSideAdd);
     }
 }
+
 class StockfishEngine {
     constructor(master) {
         let stockfishJsURL;
@@ -491,7 +496,7 @@ class StockfishEngine {
                     console.assert(false, "Error while analyzing last move");
                 }
             }
-        }
+        } 
         // add highlight and effect
         if (this.lastMoveScore != null) {
             const highlightColors = {
@@ -531,28 +536,19 @@ class StockfishEngine {
             });
         }
     }
+
     onTopMoves(move = null, isBestMove = false) {
         let top_pv_moves;
         let bestMoveSelected = false;
         if (move != null) {
             const index = this.topMoves.findIndex(object => object.move === move.move);
             if (isBestMove) {
-                // check if the best move returned from stockfish matches
-                // with the best move in the list, bring it to the top of
-                // the list if it doesn't match
-                if (this.topMoves[0].move != move.move) {
-                    this.topMoves.splice(index, 1);
-                    this.topMoves.splice(0, 0, move);
-                    // console.log(this.topMoves);
-                }
                 bestMoveSelected = true; // a best move has been selected
-            }
-            else {
+            } else {
                 if (index === -1) {
                     this.topMoves.push(move);
                     this.SortTopMoves();
-                }
-                else if (move.depth >= this.topMoves[index].depth) {
+                } else if (move.depth >= this.topMoves[index].depth) {
                     // only replace if this move has a higher depth than
                     // the one in the current top move list
                     this.topMoves[index] = move;
@@ -560,17 +556,32 @@ class StockfishEngine {
                 }
             }
         }
+    
+        if (!bestMoveSelected && this.master.options.text_to_speech) {
+            // pick a random top move up to 5 below the selected depth
+            let maxDepth = Math.max(...this.topMoves.map(move => move.depth));
+            let randomDepth = Math.floor(Math.random() * Math.min(5, maxDepth));
+            let topMoves = this.topMoves.filter(move => move.depth >= randomDepth);
+            const randomIndex = Math.floor(Math.random() * (topMoves.length));
+            const randomMove = topMoves[randomIndex];
+            // speak the top move if text-to-speech is enabled
+            const msg = new SpeechSynthesisUtterance(`One of the top moves is ${randomMove.move}`);
+            msg.rate = 0.60;
+            window.speechSynthesis.cancel(); // stop any previous text-to-speech
+            window.speechSynthesis.speak(msg);
+        }        
+      
         if (!bestMoveSelected) { // continue loading depths if a best move hasn't been selected
-            if (this.master.options.legit_auto_move) {
-                // Select a random depth to consider
-                let random_depth;
-                if (this.maxDepthLoaded) {
-                    random_depth = this.maxDepth;
-                } else {
-                    random_depth = Math.floor(Math.random() * this.master.options.max_legit_auto_move_depth) + 1;
-                    this.maxDepthLoaded = true;
-                    this.maxDepth = random_depth;
-                }
+          if (this.master.options.legit_auto_move) {
+            // Select a random depth to consider
+            let random_depth;
+            if (this.maxDepthLoaded) {
+              random_depth = this.maxDepth;
+            } else {
+              random_depth = Math.floor(Math.random() * this.master.options.max_legit_auto_move_depth) + 1;
+              this.maxDepthLoaded = true;
+              this.maxDepth = random_depth;
+            }      
                 top_pv_moves = this.topMoves.filter(move => move.depth <= random_depth).slice(0, this.options["MultiPV"]);
             } else {
                 top_pv_moves = this.topMoves.slice(0, this.options["MultiPV"]);
