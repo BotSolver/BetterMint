@@ -1,14 +1,14 @@
 {
     "manifest_version": 3,
-    "name": "ChessMint - Edited With Love (Mist.#9999)",
-    "short_name": "ChessMint v1.4.0",
+    "name": "BetterMint",
+    "short_name": "BetterMint v1.4.0",
     "icons": {
         "16": "img/logo-16.png",
         "48": "img/logo-48.png",
         "128": "img/logo-128.png"
     },
     "version": "1.4.0",
-    "description": "Help you with chess. (Edited by Mist.#9999)",
+    "description": "Help you with chess.",
     "content_scripts": [
         {
             "js": [
@@ -31,7 +31,7 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "js/chessmint.js"
+                "js/bettermint.js"
             ],
             "matches": [
                 "https://www.chess.com/*"
