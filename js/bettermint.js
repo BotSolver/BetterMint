@@ -566,10 +566,16 @@ class StockfishEngine {
             const randomMove = topMoves[randomIndex];
             // speak the top move if text-to-speech is enabled
             const msg = new SpeechSynthesisUtterance(`${randomMove.move}`);
-            msg.rate = 0.60;
+            const voices = window.speechSynthesis.getVoices();
+            const femaleVoices = voices.filter(voice => voice.voiceURI.includes('Google UK English Female'));
+            if (femaleVoices.length > 0) {
+                msg.voice = femaleVoices[0];
+            }
+            msg.volume = 0.75; // set the volume to 75%
+            msg.rate = 1;
             window.speechSynthesis.cancel(); // stop any previous text-to-speech
             window.speechSynthesis.speak(msg);
-        }        
+        } 
       
         if (!bestMoveSelected) { // continue loading depths if a best move hasn't been selected
           if (this.master.options.legit_auto_move) {
