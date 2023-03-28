@@ -565,7 +565,7 @@ class StockfishEngine {
             const randomIndex = Math.floor(Math.random() * (topMoves.length));
             const randomMove = topMoves[randomIndex];
             // speak the top move if text-to-speech is enabled
-            const msg = new SpeechSynthesisUtterance(`One of the top moves is ${randomMove.move}`);
+            const msg = new SpeechSynthesisUtterance(`${randomMove.move}`);
             msg.rate = 0.60;
             window.speechSynthesis.cancel(); // stop any previous text-to-speech
             window.speechSynthesis.speak(msg);
