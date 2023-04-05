@@ -8,19 +8,10 @@
 # BetterMint
 A chess.com extension for analyzing your game during play!
 
-## Added Features
+## Gameplay + Showcase video.
 
-**Legit Auto Move**: Let the computer make moves for you.
-- Automatically make a move after it had finished thinking, it will be a random best move!
-- !! Now okay for use aganist players without getting banned!
+https://www.youtube.com/watch?v=fOsrZpDQs2s
 
-**Auto Move Delay**: Let's delay that computer a bit.
-- Automatically make a move after a certain period of time.
-- !! Helps to stop being banned!
-
-**Auto Move Delay Randomization**: Let's add some stuff.
-- Automatically make a move after the first delay with a addition of a random period of time!
-- !! With the right settings you won't be banned.
 
 ## Installing the extension
 This extension is for any browser you can import a extension into!
