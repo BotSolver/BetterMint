@@ -1,23 +1,66 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Mist.#9999 BetterMint</title>
+    <title>BetterMint</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Exo 2">
+    <link href='https://fonts.googleapis.com/css?family=Comfortaa' rel='stylesheet'>
     <link rel="stylesheet" type="text/css" href="../css/options.css">
     <link rel="stylesheet" type="text/css" href="../css/material-icon.css">
     <link rel="stylesheet" href="../css/evalvaluetext.css">
     <script src="../js/bettermint.js"></script>
-    
+
     <script src="../js/options.js"></script>
     <style>
+        .title {
+            font-size: 240%;
+            font-family: Comfortaa;
+            vertical-align: middle;
+        }
+        
+        img {
+            width: 50px;
+            height: 50px;
+            vertical-align: middle;
+        }
+        
+        svg {
+            cursor: pointer;
+            vertical-align: middle;
+            margin-left: 25px;
+            font-size: 20px;
+            fill: #fff;
+            width: 6%;
+        }
+        
+         ::-webkit-scrollbar {
+            width: 6px;
+        }
+        /* Handle */
+        
+         ::-webkit-scrollbar-thumb {
+            background: #5d3fd3;
+            border-radius: 5px;
+        }
+        
+        body {
+            vertical-align: middle;
+            text-align: center;
+            font-family: "Exo 2";
+            margin: auto;
+        }
+        
         .options-slider {
             margin-bottom: 30px;
             width: 100%;
         }
+        
         .options-slider .title {
             font-weight: bold;
             margin-bottom: 10px;
             display: block;
         }
+        
         .options-slider .slider {
             width: 100%;
             height: 20px;
@@ -25,6 +68,7 @@
             background-color: #ccc;
             position: relative;
         }
+        
         .options-slider .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
@@ -37,6 +81,7 @@
             top: 50%;
             transform: translateY(-50%);
         }
+        
         .options-slider .slider::-moz-range-thumb {
             width: 30px;
             height: 30px;
@@ -49,24 +94,32 @@
         }
     </style>
 </head>
+
 <body>
     <div class="header-logo">
-        <img src="../img/logo-h.png" alt="BetterMint" class="main-logo">
+        <img src="https://media.discordapp.net/attachments/1091815509097447445/1091840774703956010/betterlogo.png">
+        <span class="title">BetterMint</span> <svg onclick="popout()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"/></svg>
+        <br>
+        <br>
+
     </div>
     <div class="container">
+        <div style="display: flex;">
+            <p style=" flex: 1; text-align:center;">
+                <a href="https://pastebin.com/raw/aAUtuTnq" target="_blank"></a> <a style="color:#5d3fd3;" id="link1" target="_blank" href="https://pastebin.com/raw/aAUtuTnq">Learn More</a></p>
 
-        <div>
-            <p style="text-align:center;"><a href="https://pastebin.com/raw/QvG2ghfe" target="_blank"></a> <a style="color:blue;margin-left:10px;margin-right:10px;" id="link1" target="_blank" href="https://pastebin.com/raw/nsD8mrMR">Press Here To Learn More!</a></p>
         </div>
-
-        <div class="options-slider" data-min="1" data-max="50">
-            <div class="title">ENGINE DEPTH:</div>
-            <input id="option-depth" type="range" value="15" />
-        </div>
-
-        <div class="options-slider" data-min="1" data-max="50">
-            <div class="title">THREADS:</div>
-            <input id="option-threads" type="range" value="2" />
+        <br>
+        <h1 style="text-align: center; font-size: 20px;">Toggles</h1>
+        <br>
+        <div class="options-checkbox">
+            <input id="option-limit-strength" type="checkbox" />
+            <label for="option-limit-strength">LIMIT ENGINE STRENGTH
+                <div class="tooltip">
+                    <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
+                    <span class="tooltiptext">Must be on to use engine elo module.</span>
+                </div>
+            </label>
         </div>
 
         <div class="options-checkbox">
@@ -74,7 +127,7 @@
             <label for="option-show-hints">Show Hints
                 <div class="tooltip">
                     <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                    <span class="tooltiptext">What next? Enable hints during play.</span>
+                    <span class="tooltiptext">Enable Hints to show the best next move!</span>
                 </div>
             </label>
         </div>
@@ -84,7 +137,7 @@
             <label for="option-move-analysis">Move Analysis
                 <div class="tooltip">
                     <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                    <span class="tooltiptext">See how every move compares to the best move.</span>
+                    <span class="tooltiptext">Enable to rate every move!</span>
                 </div>
             </label>
         </div>
@@ -94,7 +147,7 @@
             <label for="option-depth-bar">Progress Bar
                 <div class="tooltip">
                     <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                    <span class="tooltiptext">Has the engine finished thinking? Enable the progress bar.</span>
+                    <span class="tooltiptext">Enable progress bar to see status of the engine!</span>
                 </div>
             </label>
         </div>
@@ -104,7 +157,7 @@
             <label for="option-evaluation-bar">Evaluation Bar
                 <div class="tooltip">
                     <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                    <span class="tooltiptext">Who is winning now? Enable the evaluation bar.</span>
+                    <span class="tooltiptext">Check who's winning! Toggle evaluation bar.</span>
                 </div>
             </label>
         </div>
@@ -119,25 +172,25 @@
                 </div>
             </label>
         </div>
-          
-          <div class="options-checkbox">
+
+        <div class="options-checkbox">
             <input id="option-text-to-speech" type="checkbox" />
             <label for="option-text-to-speech">Text To Speech
-              <div class="tooltip">
+            <div class="tooltip">
                 <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                <span class="tooltiptext">Tell's you the best move.</span>
-              </div>
+                <span class="tooltiptext">Tells you the best move Verbally!</span>
+            </div>
             </label>
-          </div>   
+        </div>
 
-          <div class="options-checkbox">
+        <div class="options-checkbox">
             <input id="option-legit-auto-move" type="checkbox" />
             <label for="option-legit-auto-move">Legit Auto Move
                 <div class="tooltip">
                     <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                    <span class="tooltiptext">Let the computer make moves for you!
-                        <span style="color:red">
-                            New auto move made to be legit by Mist.#9999.
+                    <span class="tooltiptext">Let us make the best move for you!
+                        <span style="color: #D64045">
+                            Optimized & Made legit by Mist.#9999.
                         </span>
                     </span>
                 </div>
@@ -149,9 +202,25 @@
             <label for="option-random-best-move">Random Best Move
                 <div class="tooltip">
                     <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                    <span class="tooltiptext">Needs to be on with legit auto move.</span>
+                    <span class="tooltiptext" style="color: #D64045">Needs to be on with legit auto move.</span>
                 </div>
             </label>
+        </div>
+        <br>
+        <h1 style="text-align: center; font-size: 20px;">Sliders</h1>
+        <div class="options-slider" data-min="1" data-max="50">
+            <div class="title">ENGINE DEPTH:</div>
+            <input id="option-depth" type="range" value="15" />
+        </div>
+
+        <div class="options-slider" data-min="1" data-max="2850">
+            <div class="title">ENGINE ELO:</div>
+            <input id="option-elo" type="range" value="1000" />
+        </div>
+
+        <div class="options-slider" data-min="1" data-max="1024">
+            <div class="title">THREADS:</div>
+            <input id="option-threads" type="range" value="2" />
         </div>
 
         <div class="options-slider" data-min="0" data-max="20">
@@ -159,16 +228,15 @@
             <input id="option-max-legit-auto-move-depth" type="range" value="5" />
         </div>
 
-        <div class="options-slider" data-min="0" data-max="30000">
+        <div class=" options-slider" data-min="0" data-max="30000">
             <div class="title">Auto Move Delay:</div>
             <input id="option-auto-move-time" type="range" value="5000" />
         </div>
-        
-        <div class="options-slider" data-min="0" data-max="50000">
+
+        <div class="options-slider" data-min="0" data-max="30000">
             <div class="title">Auto Move Delay Randomization:</div>
             <input id="option-auto-move-time-random" type="range" value="10000" />
         </div>
-
         <div class="options-slider" data-min="0" data-max="60">
             <div class="title">Auto Move Delay Randomization Divider:</div>
             <input id="option-auto-move-time-random-div" type="range" value="10" />
@@ -178,6 +246,55 @@
             <div class="title">Auto Move Delay Randomization Multiplier:</div>
             <input id="option-auto-move-time-random-multi" type="range" value="1000" />
         </div>
+
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <style>
+              .button-container {
+                display: flex;
+                justify-content: center;
+              }
+              
+              .button {
+                display: inline-block;
+                outline: none;
+                cursor: pointer;
+                font-weight: 500;
+                border-radius: 3px;
+                padding: 0 16px;
+                border-radius: 4px;
+                color: #fff;
+                background: #6200ee;
+                line-height: 1.15;
+                font-size: 14px;
+                height: 36px;
+                word-spacing: 0px;
+                letter-spacing: .0892857143em;
+                text-decoration: none;
+                text-transform: uppercase;
+                min-width: 64px;
+                border: none;
+                text-align: center;
+                box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
+                transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
+                margin: 0 10px; /* add margin between buttons */
+              }
+        
+              .button:hover {
+                background: rgb(98, 0, 238);
+                box-shadow: 0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%);
+              }
+            </style>
+          </head>
+          <body>
+            <div class="button-container">
+              <button id="export-btn" class="button" role="button">Export Config</button>
+              <button id="import-btn" class="button" role="button">Import Config</button>
+            </div>
+            <input type="file" id="import-file-input" accept=".config" style="display:none">
+          </body>
+        </html>     
 
     </div>
 

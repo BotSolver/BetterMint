@@ -26,46 +26,39 @@ class TopMove {
 }
 class GameController {
     constructor(master, chessboard) {
-        this.master = master;
-        this.chessboard = chessboard;
-        this.controller = chessboard.game;
-        this.options = this.controller.getOptions();
-        this.depthBar = null;
-        this.evalBar = null;
-        this.evalBarFill = null;
-        this.evalScore = null;
-        this.evalScoreAbbreviated = null;
-        this.currentMarkings = [];
-        let self = this;
-
-        // Listen for the Move event
-        this.controller.on('Move', (event) => {
-            console.log("On Move", event.data);
-            this.UpdateEngine(false);
-        });
-
-        // Listen for the ModeChanged event
-        this.controller.on('ModeChanged', (event) => {
-            if (event.data === "playing") {
-                // at this point, the fen notation isn't updated yet, we should delay this
-                setTimeout(() => { this.ResetGame(); }, 100);
-            }
-        });
+      this.master = master;
+      this.chessboard = chessboard;
+      this.controller = chessboard.game;
+      this.options = this.controller.getOptions();
+      this.depthBar = null;
+      this.evalBar = null;
+      this.evalBarFill = null;
+      this.evalScore = null;
+      this.evalScoreAbbreviated = null;
+      this.currentMarkings = [];
+      let self = this;
+      this.controller.on('Move', (event) => {
+        console.log("On Move", event.data);
+        this.UpdateEngine(false);
+      });
+      // check if a new game has started
+      this.controller.on('ModeChanged', (event) => {
+        if (event.data === "playing") {
+          // at this point, the fen notation isn't updated yet, we should delay this
+          setTimeout(() => { this.ResetGame(); }, 100);
       
-        // flip the evaluation board
-        this.controller.on('UpdateOptions', (event) => {
-            this.options = this.controller.getOptions();
-            if (event.data.flipped != undefined && this.evalBar != null) {
-                if (event.data.flipped)
-                    this.evalBar.classList.add("evaluation-bar-flipped");
-                else
-                    this.evalBar.classList.remove("evaluation-bar-flipped");
-            }
-        });
-        this.CreateAnalysisTools();
-        setTimeout(() => { this.ResetGame(); }, 100);
-    }
-
+        }
+      });
+      this.controller.on('UpdateOptions', (event) => {
+        this.options = this.controller.getOptions();
+        if (event.data.flipped != undefined && this.evalBar != null) {
+          if (event.data.flipped)
+            this.evalBar.classList.add("evaluation-bar-flipped");
+          else
+            this.evalBar.classList.remove("evaluation-bar-flipped");
+        }
+      });
+}      
     UpdateExtensionOptions() {
         let options = this.master.options;
         if (options.evaluation_bar && this.evalBar == null)
@@ -148,6 +141,7 @@ class GameController {
     }
     ResetGame() {
         this.UpdateEngine(true);
+
     }
     RemoveCurrentMarkings() {
         this.currentMarkings.forEach((marking) => {
@@ -168,7 +162,7 @@ class GameController {
             topMoves.forEach((move, idx) => {
                 // isBestMove means final evaluation, don't include the moves
                 // that has less depth than the best move
-                if (isBestMove && (!move || move.depth != bestMove.depth))
+                if (isBestMove && move.depth != bestMove.depth)
                     return;
                 let color = (idx == 0) ? this.options.arrowColors.default : this.options.arrowColors.alt;
                 this.currentMarkings.push({
@@ -199,15 +193,17 @@ class GameController {
             this.controller.markings.addMany(this.currentMarkings);
         }
         if (options.depth_bar) {
-            this.SetCurrentDepth(isBestMove ? (bestMove ? bestMove.depth : 0) : ((bestMove ? bestMove.depth : 0) - 1));
+            let depthPercent = (isBestMove ? bestMove.depth : bestMove.depth - 1)
+                / this.master.engine.depth * 100;
+            this.SetCurrentDepth(depthPercent);
         }
         if (options.evaluation_bar) {
-            let score = bestMove && bestMove.mate !== undefined ? bestMove.mate : bestMove && bestMove.cp !== undefined ? bestMove.cp : 0;
+            let score = (bestMove.mate != null ? bestMove.mate : bestMove.cp);
             if (this.controller.getTurn() == 2)
                 score *= -1;
-                this.SetEvaluation(score, bestMove && bestMove.mate != null);
+            this.SetEvaluation(score, bestMove.mate != null);
         }
-    }  
+    }
     SetCurrentDepth(percent) {
         if (this.depthBar == null)
             return;
@@ -273,7 +269,10 @@ class StockfishEngine {
         this.lastMoveScore = null;
         this.threads = this.master.options.threads;
         this.depth = this.master.options.depth;
-        this.options = {};
+        this.options = {
+            "UCI_Elo": this.master.options.elo,
+            "UCI_LimitStrength": this.master.options.limit_strength,
+        }
         try {
             new SharedArrayBuffer(1024);
             stockfishJsURL = `${stockfishPathConfig.multiThreaded.loader}#${stockfishPathConfig.multiThreaded.engine}`;
@@ -282,8 +281,7 @@ class StockfishEngine {
                 this.options["Use NNUE"] = true;
                 this.options["EvalFile"] = stockfishPathConfig.multiThreaded.nnue;
             }
-        }
-        catch (e) {
+        } catch (e) {
             stockfishJsURL = `${stockfishPathConfig.singleThreaded.loader}#${stockfishPathConfig.singleThreaded.engine}`;
         }
         this.options["Hash"] = 512;
@@ -292,8 +290,7 @@ class StockfishEngine {
         try {
             this.stockfish = new Worker(stockfishJsURL);
             this.stockfish.onmessage = (e) => { this.ProcessMessage(e); };
-        }
-        catch (e) {
+        } catch (e) {
             alert("Failed to load stockfish");
             throw e;
         }
@@ -302,6 +299,7 @@ class StockfishEngine {
             this.UpdateOptions();
             this.send("ucinewgame");
         });
+        
     }
     send(cmd) {
         this.stockfish.postMessage(cmd);
@@ -541,21 +539,27 @@ class StockfishEngine {
         let top_pv_moves;
         let bestMoveSelected = false;
         if (move != null) {
-            const index = this.topMoves.findIndex(object => object.move === move.move);
-            if (isBestMove) {
-                bestMoveSelected = true; // a best move has been selected
-            } else {
-                if (index === -1) {
-                    this.topMoves.push(move);
-                    this.SortTopMoves();
-                } else if (move.depth >= this.topMoves[index].depth) {
-                    // only replace if this move has a higher depth than
-                    // the one in the current top move list
-                    this.topMoves[index] = move;
-                    this.SortTopMoves();
-                }
+          const index = this.topMoves.findIndex(object => object.move === move.move);
+          if (isBestMove) {
+            bestMoveSelected = true; // a best move has been selected
+          } else {
+            if (index === -1) {
+              move.skillLevel = this.options["Skill Level"]; // set skill level option
+              move.UCI_Elo = this.options["UCI_Elo"]; // set UCI Elo option
+              move.UCI_LimitStrength = this.options["UCI_LimitStrength"]; // set UCI LimitStrength option
+              this.topMoves.push(move);
+              this.SortTopMoves();
+            } else if (move.depth >= this.topMoves[index].depth) {
+              // only replace if this move has a higher depth than
+              // the one in the current top move list
+              move.skillLevel = this.options["Skill Level"]; // set skill level option
+              move.UCI_Elo = this.options["UCI_Elo"]; // set UCI Elo option
+              move.UCI_LimitStrength = this.options["UCI_LimitStrength"]; // set UCI LimitStrength option
+              this.topMoves[index] = move;
+              this.SortTopMoves();
             }
-        }
+          }
+        }      
     
         if (!bestMoveSelected && this.master.options.text_to_speech) {
             // pick a random top move up to 5 below the selected depth

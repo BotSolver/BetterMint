@@ -1,6 +1,8 @@
 "use strict";
 
 var inputDepth;
+var inputElo;
+var inputLimitStrength;
 var inputThreads;
 var inputAutoMoveTime;
 var inputAutoMoveTimeRandom;
@@ -18,12 +20,14 @@ var inputUseNNUE;
 
 const DefaultExtensionOptions = {
     depth: 3,
+    elo: 1000,
     threads: 8,
     auto_move_time: 5000,
     auto_move_time_random: 10000,
     auto_move_time_random_div: 10,
     auto_move_time_random_multi: 1000,
     max_legit_auto_move_depth: 5,
+    limit_strength: false,
     random_best_move: false,
     legit_auto_move: false,
     show_hints: true,
@@ -35,13 +39,19 @@ const DefaultExtensionOptions = {
 };
 
 function RestoreOptions() {
-    chrome.storage.sync.get(DefaultExtensionOptions, function (opts) {
+    chrome.storage.sync.get(DefaultExtensionOptions, function(opts) {
         let options = opts;
         if (inputDepth !== null && inputDepth.value !== undefined) {
             inputDepth.value = options.depth.toString();
             let event = new CustomEvent("input");
             event.disableUpdate = true;
             inputDepth.dispatchEvent(event);
+        }
+        if (inputElo !== null && inputElo.value !== undefined) {
+            inputElo.value = options.elo.toString();
+            let event = new CustomEvent("input");
+            event.disableUpdate = true;
+            inputElo.dispatchEvent(event);
         }
         if (inputThreads !== null && inputThreads.value !== undefined) {
             inputThreads.value = options.threads.toString();
@@ -82,6 +92,9 @@ function RestoreOptions() {
         if (inputShowHints !== null && inputShowHints.checked !== undefined) {
             inputShowHints.checked = options.show_hints;
         }
+        if (inputLimitStrength !== null && inputLimitStrength.checked !== undefined) {
+            inputLimitStrength.checked = options.limit_strength;
+        }
         if (inputLegitAutoMove !== null && inputLegitAutoMove.checked !== undefined) {
             inputLegitAutoMove.checked = options.legit_auto_move;
 
@@ -110,6 +123,7 @@ function RestoreOptions() {
 function OnOptionsChange() {
     let options = {
         depth: parseInt(inputDepth.value),
+        elo: parseInt(inputElo.value),
         threads: parseInt(inputThreads.value),
         auto_move_time: parseInt(inputAutoMoveTime.value),
         auto_move_time_random: parseInt(inputAutoMoveTimeRandom.value),
@@ -117,6 +131,7 @@ function OnOptionsChange() {
         auto_move_time_random_multi: parseInt(inputAutoMoveTimeRandomMulti.value),
         max_legit_auto_move_depth: parseInt(inputMaxLegitAutoMoveDepth.value),
         show_hints: inputShowHints.checked,
+        limit_strength: inputLimitStrength.checked,
         legit_auto_move: inputLegitAutoMove.checked,
         random_best_move: inputRandomBestMove.checked,
         text_to_speech: inputTextToSpeech.checked,
@@ -126,8 +141,8 @@ function OnOptionsChange() {
         use_nnue: inputUseNNUE.checked,
     };
     chrome.storage.sync.set(options);
-    chrome.tabs.query({}, function (tabs) {
-        tabs.forEach(function (tab) {
+    chrome.tabs.query({}, function(tabs) {
+        tabs.forEach(function(tab) {
             chrome.tabs.sendMessage(tab.id, { type: "UpdateOptions", data: options });
         });
     });
@@ -136,6 +151,8 @@ function OnOptionsChange() {
 function InitOptions() {
     inputDepth = document.getElementById("option-depth");
     inputThreads = document.getElementById("option-threads");
+    inputElo = document.getElementById("option-elo");
+    inputLimitStrength = document.getElementById("option-limit-strength");
     inputAutoMoveTime = document.getElementById("option-auto-move-time");
     inputAutoMoveTimeRandom = document.getElementById("option-auto-move-time-random");
     inputAutoMoveTimeRandomDiv = document.getElementById("option-auto-move-time-random-div");
@@ -151,11 +168,11 @@ function InitOptions() {
     inputUseNNUE = document.getElementById("option-use-nnue");
 
     const sliderProps = {
-        fill: "#2CA137",
+        fill: "#5d3fd3",
         background: "rgba(255, 255, 255, 0.214)",
     };
 
-    document.querySelectorAll(".options-slider").forEach(function (slider) {
+    document.querySelectorAll(".options-slider").forEach(function(slider) {
         const title = slider.querySelector(".title");
         const input = slider.querySelector("input");
         if (title == null || input == null)
@@ -173,13 +190,95 @@ function InitOptions() {
             if (!event.disableUpdate)
                 OnOptionsChange();
         });
-    });    
-    document.querySelectorAll(".options-checkbox").forEach(function (checkbox) {
-        checkbox.addEventListener("change", function () {
+    });
+    document.querySelectorAll(".options-checkbox").forEach(function(checkbox) {
+        checkbox.addEventListener("change", function() {
             OnOptionsChange();
         });
     });
     RestoreOptions();
 }
-document.addEventListener('DOMContentLoaded', InitOptions);
-//# sourceMappingURL=options.js.map
+
+// Export configuration as JSON file
+// Wait for the DOM to finish loading
+window.onload = function() {
+    // Get references to the buttons and file input
+    const exportBtn = document.getElementById('export-btn');
+    const importBtn = document.getElementById('import-btn');
+    const importFileInput = document.getElementById('import-file-input');
+
+    document.getElementById('export-btn').addEventListener('click', function() {
+        const options = {
+            depth: parseInt(document.getElementById('option-depth').value),
+            elo: parseInt(document.getElementById('option-elo').value),
+            threads: parseInt(document.getElementById('option-threads').value),
+            auto_move_time: parseInt(document.getElementById('option-auto-move-time').value),
+            auto_move_time_random: parseInt(document.getElementById('option-auto-move-time-random').value),
+            auto_move_time_random_div: parseInt(document.getElementById('option-auto-move-time-random-div').value),
+            auto_move_time_random_multi: parseFloat(document.getElementById('option-auto-move-time-random-multi').value),
+            max_legit_auto_move_depth: parseInt(document.getElementById('option-max-legit-auto-move-depth').value),
+            random_best_move: document.getElementById('option-random-best-move').checked,
+            limit_strength: document.getElementById('option-limit-strength').checked,
+            legit_auto_move: document.getElementById('option-legit-auto-move').checked,
+            show_hints: document.getElementById('option-show-hints').checked,
+            text_to_speech: document.getElementById('option-text-to-speech').checked,
+            move_analysis: document.getElementById('option-move-analysis').checked,
+            depth_bar: document.getElementById('option-depth-bar').checked,
+            evaluation_bar: document.getElementById('option-evaluation-bar').checked,
+            use_nnue: document.getElementById('option-use-nnue').checked
+        };      
+
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(options));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "bettermint.config");
+        document.body.appendChild(downloadAnchorNode); // required for firefox
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    });
+
+    // Import configuration from JSON file
+    document.getElementById('import-btn').addEventListener('click', function() {
+        document.getElementById('import-file-input').click();
+    });
+
+    document.getElementById('import-file-input').addEventListener('change', function() {
+        const file = this.files[0];
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const options = JSON.parse(event.target.result);
+    
+            // Update config variables from input fields
+            document.getElementById('option-depth').value = options.depth;
+            document.getElementById('option-threads').value = options.threads;
+            document.getElementById('option-elo').value = options.elo;
+            document.getElementById('option-limit-strength').value = options.limit_strength;
+            document.getElementById('option-show-hints').checked = options.show_hints;
+            document.getElementById('option-move-analysis').checked = options.move_analysis;
+            document.getElementById('option-depth-bar').checked = options.depth_bar;
+            document.getElementById('option-evaluation-bar').checked = options.evaluation_bar;
+            document.getElementById('option-use-nnue').checked = options.use_nnue;
+            document.getElementById('option-auto-move-time').value = options.auto_move_time;
+            document.getElementById('option-auto-move-time-random').value = options.auto_move_time_random;
+            document.getElementById('option-auto-move-time-random-div').value = options.auto_move_time_random_div;
+            document.getElementById('option-auto-move-time-random-multi').value = options.auto_move_time_random_multi;
+            document.getElementById('option-max-legit-auto-move-depth').value = options.max_legit_auto_move_depth;
+            document.getElementById('option-random-best-move').checked = options.random_best_move;
+            document.getElementById('option-legit-auto-move').checked = options.legit_auto_move;
+            document.getElementById('option-text-to-speech').checked = options.text_to_speech;
+    
+            // Do something with the updated options object here
+            chrome.storage.sync.set(options);
+            chrome.tabs.query({}, function (tabs) {
+                tabs.forEach(function (tab) {
+                    chrome.tabs.sendMessage(tab.id, { type: "UpdateOptions", data: options });
+                });
+            });
+        };
+        reader.readAsText(file);
+    });
+
+}
+
+    document.addEventListener('DOMContentLoaded', InitOptions);
+//# sourceMappingURL=options.js.map    
