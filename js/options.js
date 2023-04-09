@@ -2,6 +2,7 @@
 
 var inputDepth;
 var inputElo;
+var inputSkillLevel;
 var inputLimitStrength;
 var inputThreads;
 var inputAutoMoveTime;
@@ -21,6 +22,7 @@ var inputUseNNUE;
 const DefaultExtensionOptions = {
     depth: 3,
     elo: 1000,
+    skill_level: 10,
     threads: 8,
     auto_move_time: 5000,
     auto_move_time_random: 10000,
@@ -58,6 +60,12 @@ function RestoreOptions() {
             let event = new CustomEvent("input");
             event.disableUpdate = true;
             inputThreads.dispatchEvent(event);
+        }
+        if (inputSkillLevel !== null && inputSkillLevel.value !== undefined) {
+            inputSkillLevel.value = options.skill_level.toString();
+            let event = new CustomEvent("input");
+            event.disableUpdate = true;
+            inputSkillLevel.dispatchEvent(event);
         }
         if (inputAutoMoveTime !== null && inputAutoMoveTime.value !== undefined) {
             inputAutoMoveTime.value = options.auto_move_time.toString();
@@ -124,6 +132,7 @@ function OnOptionsChange() {
     let options = {
         depth: parseInt(inputDepth.value),
         elo: parseInt(inputElo.value),
+        skill_level: parseInt(inputSkillLevel.value),
         threads: parseInt(inputThreads.value),
         auto_move_time: parseInt(inputAutoMoveTime.value),
         auto_move_time_random: parseInt(inputAutoMoveTimeRandom.value),
@@ -152,6 +161,7 @@ function InitOptions() {
     inputDepth = document.getElementById("option-depth");
     inputThreads = document.getElementById("option-threads");
     inputElo = document.getElementById("option-elo");
+    inputSkillLevel = document.getElementById("option-skill-level");
     inputLimitStrength = document.getElementById("option-limit-strength");
     inputAutoMoveTime = document.getElementById("option-auto-move-time");
     inputAutoMoveTimeRandom = document.getElementById("option-auto-move-time-random");
@@ -211,6 +221,7 @@ window.onload = function() {
         const options = {
             depth: parseInt(document.getElementById('option-depth').value),
             elo: parseInt(document.getElementById('option-elo').value),
+            skill_level: parseInt(document.getElementById('option-skill-level').value),
             threads: parseInt(document.getElementById('option-threads').value),
             auto_move_time: parseInt(document.getElementById('option-auto-move-time').value),
             auto_move_time_random: parseInt(document.getElementById('option-auto-move-time-random').value),
@@ -252,6 +263,7 @@ window.onload = function() {
             document.getElementById('option-depth').value = options.depth;
             document.getElementById('option-threads').value = options.threads;
             document.getElementById('option-elo').value = options.elo;
+            document.getElementById('option-skill-level').value = options.skill_level;
             document.getElementById('option-limit-strength').value = options.limit_strength;
             document.getElementById('option-show-hints').checked = options.show_hints;
             document.getElementById('option-move-analysis').checked = options.move_analysis;

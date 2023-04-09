@@ -117,7 +117,7 @@
             <label for="option-limit-strength">LIMIT ENGINE STRENGTH
                 <div class="tooltip">
                     <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                    <span class="tooltiptext">Must be on to use engine elo module.</span>
+                    <span class="tooltiptext">Must be on to use 'ENGINE ELO' and overrides 'ENGINE SKILL LEVEL'</span>
                 </div>
             </label>
         </div>
@@ -213,9 +213,14 @@
             <input id="option-depth" type="range" value="15" />
         </div>
 
-        <div class="options-slider" data-min="1" data-max="2850">
+        <div class="options-slider" data-min="1350" data-max="2850">
             <div class="title">ENGINE ELO:</div>
             <input id="option-elo" type="range" value="1000" />
+        </div>
+
+        <div class="options-slider" data-min="1" data-max="20">
+            <div class="title">ENGINE SKILL LEVEL:</div>
+            <input id="option-skill-level" type="range" value="10" />
         </div>
 
         <div class="options-slider" data-min="1" data-max="1024">

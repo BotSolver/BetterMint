@@ -1,50 +1,44 @@
 {
     "manifest_version": 3,
-    "name": "BetterMint",
-    "short_name": "BetterMint",
+    "name": "BetterMint - v1.8.0",
+    "short_name": "BetterMint v1.8.0",
     "icons": {
-        "16": "img/16.png",
-		"32": "img/32.png",
-        "48": "img/48.png",
-		"64": "img/64.png",
-        "128": "img/128.png",
-		"256": "img/256.png"
+        "16": "img/logo-16.png",
+        "48": "img/logo-48.png",
+        "128": "img/logo-128.png"
     },
     "version": "1.8.0",
     "description": "Help you with chess.",
-    "content_scripts": [
-        {
-            "js": [
-                "js/loader.js"
-			    
-            ],
-            "css": [
-                "css/depthbar.css",
-                "css/evalbar.css",
-				"css/button.css",
-                "css/material-icon.css"
-            ],
-            "matches": [
-                "https://*.chess.com/*"
-            ],
-            "run_at": "document_start"
-        }
-    ],
+    "content_scripts": [{
+        "js": [
+            "js/loader.js"
+        ],
+        "css": [
+            "css/depthbar.css",
+            "css/evalbar.css",
+            "css/material-icon.css"
+        ],
+        "matches": [
+            "https://*.chess.com/*"
+        ],
+        "run_at": "document_start"
+    }],
     "action": {
         "default_popup": "html/options.html"
     },
-    "web_accessible_resources": [
-        {
-            "resources": [
-                "js/bettermint.js"
-            ],
-            "matches": [
-                "https://*.chess.com/*"
-            ]
-        }
-    ],
+    "web_accessible_resources": [{
+        "resources": [
+            "js/bettermint.js",
+            "html/options.html"
+        ],
+        "matches": [
+            "https://*.chess.com/*"
+        ]
+    }],
     "permissions": [
+        "scripting",
         "tabs",
-        "storage"
+        "storage",
+        "activeTab"
     ]
 }

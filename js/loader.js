@@ -2,6 +2,7 @@
 const DefaultExtensionOptions2 = {
     depth: 3,
     elo: 1000,
+    skill_level: 10,
     threads: 8,
     auto_move_time: 5000,
     auto_move_time_random: 10000,
