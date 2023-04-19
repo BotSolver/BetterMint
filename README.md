@@ -5,6 +5,9 @@
     <a href="https://github.com/BotSolver/BetterMint/releases"><img alt="Download BetterMint" src="https://img.shields.io/github/downloads/BotSolver/BetterMint/total?color=%2331c754&label=Download&logo=googlechrome&logoColor=%23ffffff"></a>
 </p>
 
+# IMPORTANT!
+So I got termed on discord which I was waiting for, I'll make a new server soon but for now, telegram is the home. https://t.me/basicsellout for any updates for now.
+
 # BetterMint
 A chess.com extension for analyzing your game during play!
 
