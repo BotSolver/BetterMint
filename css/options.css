@@ -2,23 +2,15 @@ body {
     min-width: 300px;
     min-height: 500px;
     background-color: #000000;
-    /* background-image: linear-gradient(to top, #209cff 100%, #68e0cf 200%); */
     color: #ffffff;
     padding: 0;
     width: 400px;
     margin: 0;
-    /* display: flex; */
-    /* justify-content: center; */
-    /* align-items: center; */
-    font-family: "Montserrat";
 }
 
 .header-logo {
-    background-color: #5b06d1;
+    background-color: #7a00ff;
     width: 100%;
-    /* position: absolute; */
-    /* right: 0; */
-    /* top: 0; */
 }
 
 .main-logo {
@@ -31,7 +23,6 @@ body {
 
 * {
     margin: 0;
-    padding: 0;
     box-sizing: border-box;
 }
 
@@ -80,8 +71,6 @@ body {
     color: rgba(255, 255, 255, 0.5);
     text-transform: uppercase;
     font-size: 0.65rem;
-    /* pointer-events: none; */
-    /* user-select: none; */
 }
 
 .options-slider .title::after {
@@ -95,7 +84,7 @@ body {
     -webkit-appearance: none;
     width: calc(100% - (70px));
     height: 2px;
-    border-radius: 5px;
+    border-radius: 8px;
     background: rgba(255, 255, 255, 0.314);
     outline: none;
     padding: 0;
@@ -182,7 +171,7 @@ body {
 }
 
 .options-checkbox input:checked+label:before {
-    background: #5d3fd3;
+    background: #531ce3;
     transition: all 150ms cubic-bezier(0, 0, 0, 0.1);
 }
 
@@ -207,17 +196,10 @@ body {
     background: #909090;
 }
 
-
-/* Tooltip container */
-
 .tooltip {
     position: relative;
     display: inline-block;
-    /* If you want dots under the hoverable text */
 }
-
-
-/* Tooltip text */
 
 .tooltip .tooltiptext {
     width: 260px;
@@ -225,19 +207,18 @@ body {
     left: 50%;
     margin-left: -130px;
     visibility: hidden;
+    transition: opacity 0.25s linear;
     background: rgba(0, 0, 0, 0.85);
     color: #fff;
     text-align: center;
     padding: 8px 8px;
+    opacity: 0;
     border-radius: 6px;
-    /* Position the tooltip text - see examples below! */
     position: absolute;
     z-index: 1;
 }
 
-
-/* Show the tooltip text when you mouse over the tooltip container */
-
 .tooltip:hover .tooltiptext {
     visibility: visible;
+    opacity: 1;
 }

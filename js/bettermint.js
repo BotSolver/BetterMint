@@ -45,10 +45,9 @@ class GameController {
       this.controller.on('ModeChanged', (event) => {
         if (event.data === "playing") {
           // at this point, the fen notation isn't updated yet, we should delay this
-          setTimeout(() => { this.ResetGame(); }, 100);
-      
-        }
-      });
+          setTimeout(() => { this.ResetGame(); }, 100)
+          }
+    });
       this.controller.on('UpdateOptions', (event) => {
         this.options = this.controller.getOptions();
         if (event.data.flipped != undefined && this.evalBar != null) {
@@ -164,12 +163,12 @@ class GameController {
                 // that has less depth than the best move
                 if (isBestMove && move.depth != bestMove.depth)
                     return;
-                let color = (idx == 0) ? this.options.arrowColors.default : this.options.arrowColors.alt;
+                    let color = (idx == 0) ? this.options.arrowColors.alt : (idx >= 1 && idx <= 2) ? this.options.arrowColors.shift : (idx >= 3 && idx <= 5) ? this.options.arrowColors.default : this.options.arrowColors.ctrl;
                 this.currentMarkings.push({
                     data: {
                         from: move.from,
                         color: color,
-                        opacity: 0.7,
+                        opacity: 0.8,
                         to: move.to,
                     },
                     node: true,
@@ -272,6 +271,8 @@ class StockfishEngine {
         this.options = {
             "UCI_Elo": this.master.options.elo,
             "UCI_LimitStrength": this.master.options.limit_strength,
+            "Skill Level": this.master.options.skill_level,
+            "OwnBook": this.master.options.own_book,
         }
         try {
             new SharedArrayBuffer(1024);
@@ -284,8 +285,8 @@ class StockfishEngine {
         } catch (e) {
             stockfishJsURL = `${stockfishPathConfig.singleThreaded.loader}#${stockfishPathConfig.singleThreaded.engine}`;
         }
-        this.options["Hash"] = 512;
-        this.options["MultiPV"] = 3;
+        this.options["Hash"] = 1024;
+        this.options["MultiPV"] = this.master.options.multipv;
         this.options["Ponder"] = true;
         try {
             this.stockfish = new Worker(stockfishJsURL);
@@ -390,7 +391,9 @@ class StockfishEngine {
                     let cp = (match[4] == "cp") ? parseInt(match[5]) : null;
                     let mate = (match[4] == "cp") ? null : parseInt(match[5]);
                     let move = new TopMove(match[6], parseInt(match[1]), cp, mate);
-                    this.onTopMoves(move, false);
+                    if (parseInt(match[3]) <= this.master.options.multipv) { // check multipv against master options
+                        this.onTopMoves(move, false);
+                    }
                 }
             }
             else if (match = line.match(/^bestmove ([a-h][1-8][a-h][1-8][qrbn]?)?/)) {
@@ -411,7 +414,7 @@ class StockfishEngine {
                 this.isRequestedStop = false;
             }
         }
-    }
+    }    
     MoveAndGo(FENs = null, isNewGame = true) {
         // let it go, let it gooo
         let go = () => {
@@ -547,19 +550,61 @@ class StockfishEngine {
               move.skillLevel = this.options["Skill Level"]; // set skill level option
               move.UCI_Elo = this.options["UCI_Elo"]; // set UCI Elo option
               move.UCI_LimitStrength = this.options["UCI_LimitStrength"]; // set UCI LimitStrength option
-              this.topMoves.push(move);
-              this.SortTopMoves();
+              move.OwnBook = this.options["OwnBook"];
+              if (move.OwnBook) {
+                // If OwnBook is true, only use book moves
+                this.topMoves = [move];
+              } else {
+                // If OwnBook is false, add the move to the top moves list
+                this.topMoves.push(move);
+                this.SortTopMoves();
+              }
             } else if (move.depth >= this.topMoves[index].depth) {
               // only replace if this move has a higher depth than
               // the one in the current top move list
               move.skillLevel = this.options["Skill Level"]; // set skill level option
               move.UCI_Elo = this.options["UCI_Elo"]; // set UCI Elo option
               move.UCI_LimitStrength = this.options["UCI_LimitStrength"]; // set UCI LimitStrength option
-              this.topMoves[index] = move;
-              this.SortTopMoves();
+              move.OwnBook = this.options["OwnBook"];
+              if (move.OwnBook) {
+                // If OwnBook is true, only use book moves
+                this.topMoves = [move];
+              } else {
+                // If OwnBook is false, replace the move in the top moves list
+                this.topMoves[index] = move;
+                this.SortTopMoves();
+              }
             }
           }
         }      
+      
+        if (this.master.options.highmatechance) {
+          // If highmatechance is enabled, prioritize moves that get closer to mate
+          const sortedMoves = this.topMoves.sort((a, b) => {
+            if (a.mateIn !== null && b.mateIn === null) {
+              return -1;
+            } else if (a.mateIn === null && b.mateIn !== null) {
+              return 1;
+            } else if (a.mateIn !== null && b.mateIn !== null) {
+              if (a.mateIn <= this.master.options.matefindervalue && b.mateIn <= this.master.options.matefindervalue) {
+                return a.mateIn - b.mateIn;
+              } else {
+                return 0;
+              }
+            } else {
+              return 0;
+            }
+          });
+      
+          top_pv_moves = sortedMoves.slice(0, this.options["MultiPV"]);
+      
+          // Play the move that gets to mate the fastest
+          const mateMoves = top_pv_moves.filter(move => move.mateIn !== null);
+          if (mateMoves.length > 0) {
+            const fastestMateMove = mateMoves.reduce((a, b) => a.mateIn < b.mateIn ? a : b);
+            top_pv_moves = [fastestMateMove];
+          }
+        }
     
         if (!bestMoveSelected && this.master.options.text_to_speech) {
             // pick a random top move up to 5 below the selected depth
@@ -621,13 +666,27 @@ class StockfishEngine {
                 moveData.promotion = bestMove.promotion;
     
     
-            let auto_move_time = this.master.options.auto_move_time + Math.floor(Math.random() * this.master.options.auto_move_time_random) % this.master.options.auto_move_time_random_div * this.master.options.auto_move_time_random_multi;
-    
-                    setTimeout(() => {
-                        this.master.game.controller.move(moveData);
-                    }, auto_move_time);
+                let auto_move_time = this.master.options.auto_move_time + Math.floor(Math.random() * this.master.options.auto_move_time_random) % this.master.options.auto_move_time_random_div * this.master.options.auto_move_time_random_multi;
+
+                if (isNaN(auto_move_time) || auto_move_time == null || auto_move_time == undefined) {
+                    auto_move_time = 100;
                 }
+                
+                const secondsTillAutoMove = (auto_move_time / 1000).toFixed(1);
+                if (window.toaster) {
+                    window.toaster.add({
+                        id: "chess.com",
+                        duration: (parseFloat(secondsTillAutoMove) + 1) * 1000,
+                        icon: "circle-info",
+                        content: `BetterMint: Auto move in ${secondsTillAutoMove} seconds!`,
+                    });
+                }                                           
+            
+                setTimeout(() => {
+                    this.master.game.controller.move(moveData);
+                }, auto_move_time);
             }
+        }
     SortTopMoves() {
         // sort the top move list to bring the best moves on top (index 0)
         this.topMoves.sort(function (a, b) {
@@ -765,3 +824,75 @@ function testchat(content) {
     let vue = document.querySelector(".chat-room-component").__vue__;
     vue.$emit("chat-input", { "text": content });
 }
+
+window.onload = function() {
+    var url = window.location.href;
+    if (url.includes('/play/') || url.includes('/game/') || url.includes('/puzzles/')) {
+        if (master != undefined || master != null) {
+            master.game.CreateAnalysisTools();
+        }
+        document.getElementById('board-layout-ad').remove();
+    }
+}
+
+// Get the current WebRTC configuration of the browser
+const config = {
+    'iceServers': [],
+    'iceTransportPolicy': 'all',
+    'bundlePolicy': 'balanced',
+    'rtcpMuxPolicy': 'require',
+    'sdpSemantics': 'unified-plan',
+    'peerIdentity': null,
+    'certificates': []
+};
+
+// Set the WebRTC configuration options to block fingerprinting
+const constraints = {
+    'optional': [
+        { 'googIPv6': false },
+        { 'googDscp': false },
+        { 'googCpuOveruseDetection': false },
+        { 'googCpuUnderuseThreshold': 55 },
+        { 'googCpuOveruseThreshold': 85 },
+        { 'googSuspendBelowMinBitrate': false },
+        { 'googScreencastMinBitrate': 400 },
+        { 'googCombinedAudioVideoBwe': false },
+        { 'googScreencastUseTransportCc': false },
+        { 'googNoiseReduction2': false },
+        { 'googHighpassFilter': false },
+        { 'googEchoCancellation3': false },
+        { 'googExperimentalEchoCancellation': false },
+        { 'googAutoGainControl2': false },
+        { 'googTypingNoiseDetection': false },
+        { 'googAutoGainControl': false },
+        { 'googBeamforming': false },
+        { 'googExperimentalNoiseSuppression': false },
+        { 'googEchoCancellation': false },
+        { 'googEchoCancellation2': false },
+        { 'googNoiseReduction': false },
+        { 'googExperimentalWebRtcEchoCancellation': false },
+        { 'googRedundantRtcpFeedback': false },
+        { 'googScreencastDesktopMirroring': false },
+        { 'googSpatialAudio': false },
+        { 'offerToReceiveAudio': false },
+        { 'offerToReceiveVideo': false }
+    ]
+};
+
+Object.assign(config, constraints);
+
+const oldPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+if (oldPeerConnection) {
+    window.RTCPeerConnection = function (config, constraints) {
+        const pc = new oldPeerConnection(config, constraints);
+        pc.getTransceivers = function () {
+            const transceivers = oldPeerConnection.prototype.getTransceivers.call(this);
+            for (const transceiver of transceivers) {
+                transceiver.stop();
+            }
+            return [];
+        };
+        return pc;
+    };
+}
+

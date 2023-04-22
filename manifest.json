@@ -1,13 +1,13 @@
 {
     "manifest_version": 3,
-    "name": "BetterMint - v1.8.0",
-    "short_name": "BetterMint v1.8.0",
+    "name": "BetterMint - v1.9.0",
+    "short_name": "BetterMint v1.9.0",
     "icons": {
         "16": "img/logo-16.png",
         "48": "img/logo-48.png",
         "128": "img/logo-128.png"
     },
-    "version": "1.8.0",
+    "version": "1.9.0",
     "description": "Help you with chess.",
     "content_scripts": [{
         "js": [
@@ -18,9 +18,9 @@
             "css/evalbar.css",
             "css/material-icon.css"
         ],
-        "matches": [
-            "https://*.chess.com/*"
-        ],
+		"matches": [
+			"https://*.chess.com/*"
+		],
         "run_at": "document_start"
     }],
     "action": {
@@ -31,9 +31,9 @@
             "js/bettermint.js",
             "html/options.html"
         ],
-        "matches": [
-            "https://*.chess.com/*"
-        ]
+		"matches": [
+			"https://*.chess.com/*"
+		]
     }],
     "permissions": [
         "scripting",

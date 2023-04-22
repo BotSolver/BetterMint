@@ -3,6 +3,8 @@
 var inputDepth;
 var inputElo;
 var inputSkillLevel;
+var inputMultiPV;
+var inputOwnBook;
 var inputLimitStrength;
 var inputThreads;
 var inputAutoMoveTime;
@@ -10,6 +12,8 @@ var inputAutoMoveTimeRandom;
 var inputAutoMoveTimeRandomDiv;
 var inputAutoMoveTimeRandomMulti;
 var inputLegitAutoMove;
+var inputMateFinderValue;
+var inputHighMateChance;
 var inputRandomBestMove;
 var inputMaxLegitAutoMoveDepth;
 var inputShowHints;
@@ -23,12 +27,16 @@ const DefaultExtensionOptions = {
     depth: 3,
     elo: 1000,
     skill_level: 10,
+    multipv: 3,
     threads: 8,
     auto_move_time: 5000,
     auto_move_time_random: 10000,
     auto_move_time_random_div: 10,
     auto_move_time_random_multi: 1000,
     max_legit_auto_move_depth: 5,
+    matefindervalue: 3,
+    ownbook: false,
+    highmatechance: false,
     limit_strength: false,
     random_best_move: false,
     legit_auto_move: false,
@@ -54,6 +62,12 @@ function RestoreOptions() {
             let event = new CustomEvent("input");
             event.disableUpdate = true;
             inputElo.dispatchEvent(event);
+        }
+        if (inputMultiPV !== null && inputMultiPV.value !== undefined) {
+            inputMultiPV.value = options.multipv.toString();
+            let event = new CustomEvent("input");
+            event.disableUpdate = true;
+            inputMultiPV.dispatchEvent(event);
         }
         if (inputThreads !== null && inputThreads.value !== undefined) {
             inputThreads.value = options.threads.toString();
@@ -97,8 +111,20 @@ function RestoreOptions() {
             event.disableUpdate = true;
             inputMaxLegitAutoMoveDepth.dispatchEvent(event);
         }
+        if (inputMateFinderValue !== null && inputMateFinderValue.value !== undefined) {
+            inputMateFinderValue.value = options.matefindervalue.toString();
+            let event = new CustomEvent("input");
+            event.disableUpdate = true;
+            inputMateFinderValue.dispatchEvent(event);
+        }
         if (inputShowHints !== null && inputShowHints.checked !== undefined) {
             inputShowHints.checked = options.show_hints;
+        }
+        if (inputHighMateChance !== null && inputHighMateChance.checked !== undefined) {
+            inputHighMateChance.checked = options.highmatechance;
+        }
+        if (inputOwnBook !== null && inputOwnBook.checked !== undefined) {
+            inputOwnBook.checked = options.ownbook;
         }
         if (inputLimitStrength !== null && inputLimitStrength.checked !== undefined) {
             inputLimitStrength.checked = options.limit_strength;
@@ -133,13 +159,17 @@ function OnOptionsChange() {
         depth: parseInt(inputDepth.value),
         elo: parseInt(inputElo.value),
         skill_level: parseInt(inputSkillLevel.value),
+        multipv: parseInt(inputMultiPV.value),
         threads: parseInt(inputThreads.value),
+        matefindervalue: parseInt(inputMateFinderValue.value),
         auto_move_time: parseInt(inputAutoMoveTime.value),
         auto_move_time_random: parseInt(inputAutoMoveTimeRandom.value),
         auto_move_time_random_div: parseInt(inputAutoMoveTimeRandomDiv.value),
         auto_move_time_random_multi: parseInt(inputAutoMoveTimeRandomMulti.value),
         max_legit_auto_move_depth: parseInt(inputMaxLegitAutoMoveDepth.value),
         show_hints: inputShowHints.checked,
+        highmatechance: inputHighMateChance.checked,
+        ownbook: inputOwnBook.checked,
         limit_strength: inputLimitStrength.checked,
         legit_auto_move: inputLegitAutoMove.checked,
         random_best_move: inputRandomBestMove.checked,
@@ -161,6 +191,10 @@ function InitOptions() {
     inputDepth = document.getElementById("option-depth");
     inputThreads = document.getElementById("option-threads");
     inputElo = document.getElementById("option-elo");
+    inputMateFinderValue = document.getElementById("option-mate-finder-value");
+    inputOwnBook = document.getElementById("option-ownbook");
+    inputMultiPV = document.getElementById("option-multipv");
+    inputHighMateChance = document.getElementById("option-highmatechance");
     inputSkillLevel = document.getElementById("option-skill-level");
     inputLimitStrength = document.getElementById("option-limit-strength");
     inputAutoMoveTime = document.getElementById("option-auto-move-time");
@@ -221,6 +255,8 @@ window.onload = function() {
         const options = {
             depth: parseInt(document.getElementById('option-depth').value),
             elo: parseInt(document.getElementById('option-elo').value),
+            matefindervalue: parseInt(document.getElementById('option-mate-finder-value').value),
+            multipv: parseInt(document.getElementById('option-multipv').value),
             skill_level: parseInt(document.getElementById('option-skill-level').value),
             threads: parseInt(document.getElementById('option-threads').value),
             auto_move_time: parseInt(document.getElementById('option-auto-move-time').value),
@@ -229,6 +265,8 @@ window.onload = function() {
             auto_move_time_random_multi: parseFloat(document.getElementById('option-auto-move-time-random-multi').value),
             max_legit_auto_move_depth: parseInt(document.getElementById('option-max-legit-auto-move-depth').value),
             random_best_move: document.getElementById('option-random-best-move').checked,
+            ownbook: document.getElementById('option-ownbook').checked,
+            highmatechance: document.getElementById('option-highmatechance').checked,
             limit_strength: document.getElementById('option-limit-strength').checked,
             legit_auto_move: document.getElementById('option-legit-auto-move').checked,
             show_hints: document.getElementById('option-show-hints').checked,
@@ -263,6 +301,8 @@ window.onload = function() {
             document.getElementById('option-depth').value = options.depth;
             document.getElementById('option-threads').value = options.threads;
             document.getElementById('option-elo').value = options.elo;
+            document.getElementById('option-mate-finder-value').value = options.matefindervalue;
+            document.getElementById('option-multipv').value = options.multipv;
             document.getElementById('option-skill-level').value = options.skill_level;
             document.getElementById('option-limit-strength').value = options.limit_strength;
             document.getElementById('option-show-hints').checked = options.show_hints;
@@ -270,6 +310,8 @@ window.onload = function() {
             document.getElementById('option-depth-bar').checked = options.depth_bar;
             document.getElementById('option-evaluation-bar').checked = options.evaluation_bar;
             document.getElementById('option-use-nnue').checked = options.use_nnue;
+            document.getElementById('option-ownbook').checked = options.ownbook;
+            document.getElementById('option-highmatechance').checked = options.highmatechance;
             document.getElementById('option-auto-move-time').value = options.auto_move_time;
             document.getElementById('option-auto-move-time-random').value = options.auto_move_time_random;
             document.getElementById('option-auto-move-time-random-div').value = options.auto_move_time_random_div;

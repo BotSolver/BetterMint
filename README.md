@@ -1,27 +1,33 @@
 <p align="center">
     <img width="350" src="https://cdn.discordapp.com/attachments/1017565672622006303/1089946864717144094/image.png">
     <br><br>
-    <a href="https://discord.gg/bettermint"><img alt="BetterMint discord!" src="https://img.shields.io/badge/Discord-BetterMint-0?style=flat&logo=discord"></a>
+    <a href="https://discord.gg/GX6vsEeZ6X"><img alt="BetterMint discord!" src="https://img.shields.io/badge/Discord-BetterMint-0?style=flat&logo=discord"></a>
     <a href="https://github.com/BotSolver/BetterMint/releases"><img alt="Download BetterMint" src="https://img.shields.io/github/downloads/BotSolver/BetterMint/total?color=%2331c754&label=Download&logo=googlechrome&logoColor=%23ffffff"></a>
 </p>
-
-# IMPORTANT!
-So I got termed on discord which I was waiting for, I'll make a new server soon but for now, telegram is the home. https://t.me/basicsellout for any updates for now.
 
 # BetterMint
 A chess.com extension for analyzing your game during play!
 
-## Gameplay + Showcase video.
+## Added Features
 
-https://www.youtube.com/watch?v=fOsrZpDQs2s
+**Legit Auto Move**: Let the computer make moves for you.
+- Automatically make a move after it had finished thinking, it will be a random best move!
+- !! Now okay for use aganist players without getting banned!
 
+**Auto Move Delay**: Let's delay that computer a bit.
+- Automatically make a move after a certain period of time.
+- !! Helps to stop being banned!
+
+**Auto Move Delay Randomization**: Let's add some stuff.
+- Automatically make a move after the first delay with a addition of a random period of time!
+- !! With the right settings you won't be banned.
 
 ## Installing the extension
 This extension is for any browser you can import a extension into!
 
 You must install it manually by following the steps below:
 
-- Download the extension and extract it: [Latest Version](https://github.com/BotSolver/BetterMint/releases/download/bettermint/BetterMint.zip)
+- Download the extension and extract it: [v1.4.0](https://github.com/BotSolver/BetterMint/releases/download/v1.4.0/BetterMint.zip)
 - Go to the Extensions page by entering `chrome://extensions` in a new tab, or go to the `Manage extensions` page.
 - On the top right corner, you should see an option named `Developer mode`, enable it.
 - A button named `Load unpacked` will show up in the top left corner, click it.
