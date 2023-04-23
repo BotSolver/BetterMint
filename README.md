@@ -1,7 +1,7 @@
 <p align="center">
     <img width="350" src="https://cdn.discordapp.com/attachments/1017565672622006303/1089946864717144094/image.png">
     <br><br>
-    <a href="https://discord.gg/GX6vsEeZ6X"><img alt="BetterMint discord!" src="https://img.shields.io/badge/Discord-BetterMint-0?style=flat&logo=discord"></a>
+    <a href="https://discord.gg/bettermint"><img alt="BetterMint discord!" src="https://img.shields.io/badge/Discord-BetterMint-0?style=flat&logo=discord"></a>
     <a href="https://github.com/BotSolver/BetterMint/releases"><img alt="Download BetterMint" src="https://img.shields.io/github/downloads/BotSolver/BetterMint/total?color=%2331c754&label=Download&logo=googlechrome&logoColor=%23ffffff"></a>
 </p>
 
@@ -22,12 +22,14 @@ A chess.com extension for analyzing your game during play!
 - Automatically make a move after the first delay with a addition of a random period of time!
 - !! With the right settings you won't be banned.
 
+**AND MUCH MUCH MORE!**
+
 ## Installing the extension
 This extension is for any browser you can import a extension into!
 
 You must install it manually by following the steps below:
 
-- Download the extension and extract it: [v1.4.0](https://github.com/BotSolver/BetterMint/releases/download/v1.4.0/BetterMint.zip)
+- Download the extension and extract it: [Latest Version](https://github.com/BotSolver/BetterMint/releases/download/bettermint/BetterMint.zip)
 - Go to the Extensions page by entering `chrome://extensions` in a new tab, or go to the `Manage extensions` page.
 - On the top right corner, you should see an option named `Developer mode`, enable it.
 - A button named `Load unpacked` will show up in the top left corner, click it.
