@@ -1,403 +1,83 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-    <title>BetterMint</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Exo 2">
-    <link href='https://fonts.googleapis.com/css?family=Comfortaa' rel='stylesheet'>
-    <link rel="stylesheet" type="text/css" href="../css/options.css">
-    <link rel="stylesheet" type="text/css" href="../css/material-icon.css">
-    <link rel="stylesheet" type="text/css" href="../css/fontawesome.css">
-    <link rel="stylesheet" href="../css/evalvaluetext.css">
-    <script src="../js/bettermint.js"></script>
-    <script src="../js/options.js"></script>
-    <style>
-        @keyframes fadein {
-            0% {
+    <head>
+        <title>BetterMint</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Exo 2">
+        <link href='https://fonts.googleapis.com/css?family=Comfortaa' rel='stylesheet'>
+        <link rel="stylesheet" type="text/css" href="../css/options.css">
+        <link rel="stylesheet" type="text/css" href="../css/material-icon.css">
+        <link rel="stylesheet" type="text/css" href="../css/fontawesome.css">
+        <link rel="stylesheet" href="../css/evalvaluetext.css">
+        <script src="../js/bettermint.js"></script>
+        <script src="../js/options.js"></script>
+        <style>
+            @keyframes fadein {
+                0% {
+                    opacity: 0;
+                }
+                100% {
+                    opacity: 1;
+                }
+            }
+
+            @keyframes fadeout {
+                0% {
+                    opacity: 1;
+                }
+                100% {
+                    opacity: 0;
+                }
+            }
+
+            .ModalBackground {
+                display: none;
+                position: fixed;
+                animation: fadein 0.5s linear forwards;
+                z-index: 1;
+                left: 0;
                 opacity: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgb(0, 0, 0);
+                background-color: rgba(0, 0, 0, 0.4);
             }
-            100% {
-                opacity: 1;
-            }
-        }
-        
-        @keyframes fadeout {
-            0% {
-                opacity: 1;
-            }
-            100% {
+            .lmco {
+                display: none;
+                position: fixed;
+                animation: fadein 0.5s linear forwards;
+                z-index: 1;
+                left: 0;
                 opacity: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgb(0, 0, 0);
+                background-color: rgba(0, 0, 0, 0.4);
             }
-        }
-        
-        .ModalBackground {
-            display: none;
-            position: fixed;
-            animation: fadein 0.5s linear forwards;
-            z-index: 1;
-            left: 0;
-            opacity: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0, 0, 0);
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-        
-        .settings-content {
-            background-color: #292A2D;
-            text-align: center;
-            margin: 15% auto;
-            padding: 20px;
-            box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
-            border-radius: 8px;
-            width: 80%;
-        }
-        
-        .button-container {
-            display: flex;
-            justify-content: center;
-        }
-        
-        .button {
-            display: inline-block;
-            outline: none;
-            cursor: pointer;
-            font-weight: 500;
-            border-radius: 3px;
-            padding: 0 16px;
-            border-radius: 4px;
-            color: #fff;
-            background: #5d3fd3;
-            line-height: 1.15;
-            font-size: 14px;
-            height: 36px;
-            word-spacing: 0px;
-            letter-spacing: .0892857143em;
-            text-decoration: none;
-            text-transform: uppercase;
-            min-width: 64px;
-            border: none;
-            text-align: center;
-            box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
-            transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
-            margin: 10px auto;
-            /* add margin between buttons */
-        }
-        
-        .button:hover {
-            background: #5d3fd3;
-            box-shadow: 0px 2px 4px -1px rgb(255 255 255 / 20%), 0px 4px 5px 0px rgb(255 255 255 / 14%), 0px 1px 10px 0px rgb(255 255 255/ 12%);
-        }
-        
-        .title {
-            font-size: 240%;
-            font-family: Comfortaa;
-            vertical-align: middle;
-        }
-        
-        img {
-            width: 50px;
-            height: 50px;
-            vertical-align: middle;
-        }
-        
-        .logo {
-            cursor: pointer;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z'/%3E%3C/svg%3E");
-        }
-        
-        svg {
-            cursor: pointer;
-            fill: #fff;
-            vertical-align: middle;
-            margin-left: 25px;
-            font-size: 25px;
-            width: 5%;
-            transition: fill 0.5s;
-        }
-        
-        svg:hover {
-            fill: #5d3fd3;
-            transition: fill 0.5s;
-        }
-        
-         ::-webkit-scrollbar {
-            width: 6px;
-        }
-        /* Handle */
-        
-         ::-webkit-scrollbar-thumb {
-            background: #5d3fd3;
-            border-radius: 5px;
-        }
-        
-        body {
-            vertical-align: middle;
-            text-align: center;
-            font-family: "Exo 2";
-            margin: auto;
-        }
-        
-        .options-slider {
-            margin-bottom: 30px;
-            width: 100%;
-        }
-        
-        .options-slider .title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            display: block;
-        }
-        
-        .options-slider .slider {
-            width: 100%;
-            height: 20px;
-            border-radius: 10px;
-            background-color: #ccc;
-            position: relative;
-        }
-        
-        #themes {
-            background-color: rgba(255, 255, 255, 0.08);
-            border-radius: 8px;
-        }
-        
-        .options-slider .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-        
-        .options-slider .slider::-moz-range-thumb {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-    </style>
-</head>
+            .settings-content {
+                background-color: #292A2D;
+                text-align: center;
+                margin: 15% auto;
+                padding: 20px;
+                box-shadow: 0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%);
+                border-radius: 8px;
+                width: 80%;
+            }
+            .lmcon {
+                background-color: #292A2D;
+                text-align: center;
+                margin: 15% auto;
+                padding: 20px;
+                box-shadow: 0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%);
+                border-radius: 8px;
+                width: 80%;
+            }
 
-<body>
-    <div class="header-logo">
-        <img src="https://media.discordapp.net/attachments/1091815509097447445/1091840774703956010/betterlogo.png">
-        <span class="title">BetterMint</span>
-        <?xml version="1.0" encoding="utf-8"?>
-       <svg id="popoutb" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-            <path d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"
-                 />
-            </svg>
-        <svg id="settingsb" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z"/></svg>
-        <br>
-        <br> 
-
-    </div>
-    <div class="container">
-        <div style="display: flex;">
-            <p style=" flex: 1; text-align:center;">
-                <a href="https://pastebin.com/raw/aAUtuTnq" target="_blank"></a> <a style="color:#5d3fd3;" id="link1" target="_blank" href="https://pastebin.com/raw/aAUtuTnq">Learn More</a></p>
-
-        </div>
-        <br>
-
-        <h1 style="text-align: center; font-size: 20px;">Engine Settings</h1>
-        <div class="options-checkbox">
-            <input id="option-limit-strength" type="checkbox" />
-            <label for="option-limit-strength">LIMIT ENGINE STRENGTH
-                <div class="tooltip">
-                    <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                    <span class="tooltiptext">Must be on to use 'ENGINE ELO' and overrides 'ENGINE SKILL LEVEL'</span>
-                </div>
-            </label>
-        </div>
-        <div class="options-slider" data-min="1" data-max="50">
-            <div class="title">ENGINE DEPTH:</div>
-            <input id="option-depth" type="range" value="15" />
-        </div>
-
-        <div class="options-slider" data-min="1350" data-max="2850">
-            <div class="title">ENGINE ELO:</div>
-            <input id="option-elo" type="range" value="1000" />
-        </div>
-
-        <div class="options-slider" data-min="1" data-max="20">
-            <div class="title">ENGINE SKILL LEVEL:</div>
-            <input id="option-skill-level" type="range" value="10" />
-        </div>
-
-        <div class="options-slider" data-min="1" data-max="1024">
-            <div class="title">THREADS:</div>
-            <input id="option-threads" type="range" value="2" />
-        </div>
-
-        <div class="options-slider" data-min="1" data-max="10">
-            <div class="title">ARROWS:</div>
-            <input id="option-multipv" type="range" value="3" />
-        </div>
-        <h1 style="text-align: center; font-size: 20px;">UI Toggles</h1>
-        <br>
-
-        <div class="options-checkbox">
-            <input id="option-show-hints" type="checkbox" />
-            <label for="option-show-hints">Show Hints
-                <div class="tooltip">
-                    <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                    <span class="tooltiptext">Enable Hints to show the best next move!</span>
-                </div>
-            </label>
-        </div>
-
-        <div class="options-checkbox">
-            <input id="option-move-analysis" type="checkbox" />
-            <label for="option-move-analysis">Move Analysis
-                <div class="tooltip">
-                    <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                    <span class="tooltiptext">Enable to rate every move!</span>
-                </div>
-            </label>
-        </div>
-
-        <div class="options-checkbox">
-            <input id="option-depth-bar" type="checkbox" />
-            <label for="option-depth-bar">Progress Bar
-                <div class="tooltip">
-                    <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                    <span class="tooltiptext">Enable progress bar to see status of the engine!</span>
-                </div>
-            </label>
-        </div>
-
-        <div class="options-checkbox">
-            <input id="option-evaluation-bar" type="checkbox" />
-            <label for="option-evaluation-bar">Evaluation Bar
-                <div class="tooltip">
-                    <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                    <span class="tooltiptext">Check who's winning! Toggle evaluation bar.</span>
-                </div>
-            </label>
-        </div>
-
-        <h1 style="text-align: center; font-size: 20px;">Extra Engine Settings</h1>
-        <br>
-
-        <div class="options-checkbox">
-            <input id="option-use-nnue" type="checkbox" />
-            <label for="option-use-nnue">Use NNUE
-                <div class="tooltip">
-                    <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                    <span class="tooltiptext">NNUE is stronger but slower and needs more computational power. This
-                        feature requires downloading a 45Mb .nnue file on the first load.</span>
-                </div>
-            </label>
-        </div>
-
-        <div class="options-checkbox">
-            <input id="option-ownbook" type="checkbox" />
-            <label for="option-ownbook">Force Book Moves
-                <div class="tooltip">
-                    <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                    <span class="tooltiptext">Force's the engine to play book moves!</span>
-                </div>
-            </label>
-        </div>
-
-        <div class="options-checkbox">
-            <input id="option-text-to-speech" type="checkbox" />
-            <label for="option-text-to-speech">Text To Speech
-            <div class="tooltip">
-                <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                <span class="tooltiptext">Tells you the best move Verbally!</span>
-            </div>
-            </label>
-        </div>
-
-        <div class="options-checkbox">
-            <input id="option-highmatechance" type="checkbox" />
-            <label for="option-highmatechance">Mate Finder
-            <div class="tooltip">
-                <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                <span class="tooltiptext">Looks for mate with the value in 'Mate Finder Value'</span>
-            </div>
-            </label>
-        </div>
-
-        <div class="options-slider" data-min="1" data-max="50">
-            <div class="title">Mate Finder Distance:</div>
-            <input id="option-mate-finder-value" type="range" value="3" />
-        </div>
-
-        <h1 style="text-align: center; font-size: 20px;">Auto Move Settings</h1>
-
-        <div class="options-checkbox">
-            <input id="option-legit-auto-move" type="checkbox" />
-            <label for="option-legit-auto-move">Legit Auto Move
-                <div class="tooltip">
-                    <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                    <span class="tooltiptext">Let us make the best move for you!
-                        <span style="color: #D64045">
-                            Optimized & Made legit by Mist.#9999.
-                        </span>
-                    </span>
-                </div>
-            </label>
-        </div>
-
-        <div class="options-checkbox">
-            <input id="option-random-best-move" type="checkbox" />
-            <label for="option-random-best-move">Random Best Move
-                <div class="tooltip">
-                    <span class="material-icons" style="color: #777777; font-size: 20px !important;">help</span>
-                    <span class="tooltiptext" style="color: #D64045">Needs to be on with legit auto move.</span>
-                </div>
-            </label>
-        </div>
-
-        <div class="options-slider" data-min="0" data-max="20">
-            <div class="title">Max Legit Auto Move Depth:</div>
-            <input id="option-max-legit-auto-move-depth" type="range" value="5" />
-        </div>
-
-        <div class=" options-slider" data-min="0" data-max="30000">
-            <div class="title">Auto Move Delay:</div>
-            <input id="option-auto-move-time" type="range" value="5000" />
-        </div>
-
-        <div class="options-slider" data-min="0" data-max="30000">
-            <div class="title">Auto Move Delay Randomization:</div>
-            <input id="option-auto-move-time-random" type="range" value="10000" />
-        </div>
-        <div class="options-slider" data-min="0" data-max="60">
-            <div class="title">Auto Move Delay Randomization Divider:</div>
-            <input id="option-auto-move-time-random-div" type="range" value="10" />
-        </div>
-
-        <div class="options-slider" data-min="0" data-max="2000">
-            <div class="title">Auto Move Delay Randomization Multiplier:</div>
-            <input id="option-auto-move-time-random-multi" type="range" value="1000" />
-        </div>
-
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <style>
-              .button-container {
-                display: flex;
-                justify-content: center;
-              }
-              
-              .button {
+            .button {
                 display: inline-block;
                 outline: none;
                 cursor: pointer;
@@ -406,39 +86,400 @@
                 padding: 0 16px;
                 border-radius: 4px;
                 color: #fff;
-                background: #6200ee;
+                background: #5d3fd3;
                 line-height: 1.15;
                 font-size: 14px;
                 height: 36px;
-                word-spacing: 0px;
-                letter-spacing: .0892857143em;
+                word-spacing: 0;
+                letter-spacing: 0.0892857143em;
                 text-decoration: none;
                 text-transform: uppercase;
                 min-width: 64px;
                 border: none;
                 text-align: center;
-                box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
+                box-shadow: 0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%);
                 transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
-                margin: 0 10px; /* add margin between buttons */
-              }
-        
-              .button:hover {
-                background: rgb(98, 0, 238);
-                box-shadow: 0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%);
-              }
-            </style>
-          </head>
-          <body>
-            <div class="button-container">
-              <button id="export-btn" class="button" role="button">Export Config</button>
-              <button id="import-btn" class="button" role="button">Import Config</button>
+                margin: 10px auto;
+                /* add margin between buttons */
+            }
+
+            .button:hover {
+                background: #5d3fd3;
+                box-shadow: 0 2px 4px -1px rgb(255 255 255 / 20%), 0 4px 5px 0 rgb(255 255 255 / 14%), 0 1px 10px 0 rgb(255 255 255/ 12%);
+            }
+
+            .title {
+                font-size: 240%;
+                font-family: Comfortaa;
+                vertical-align: middle;
+            }
+
+            img {
+                width: 50px;
+                height: 50px;
+                vertical-align: middle;
+            }
+
+            .logo {
+                cursor: pointer;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z'/%3E%3C/svg%3E");
+            }
+
+            svg {
+                cursor: pointer;
+                fill: #fff;
+                vertical-align: middle;
+                margin-left: 25px;
+                font-size: 25px;
+                width: 5%;
+                transition: fill 0.5s;
+            }
+
+            svg:hover {
+                fill: #5d3fd3;
+                transition: fill 0.5s;
+            }
+
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+            /* Handle */
+            ::-webkit-scrollbar-thumb {
+                background: #5d3fd3;
+                border-radius: 5px;
+            }
+
+            body {
+                vertical-align: middle;
+                text-align: center;
+                font-family: "Exo 2";
+                margin: auto;
+            }
+
+            .options-slider {
+                margin-bottom: 30px;
+                width: 100%;
+            }
+
+            .options-slider .title {
+                font-weight: bold;
+                margin-bottom: 10px;
+                display: block;
+            }
+
+            .options-slider .slider {
+                width: 100%;
+                height: 20px;
+                border-radius: 10px;
+                background-color: #ccc;
+                position: relative;
+            }
+
+            #themes {
+                background-color: rgba(255, 255, 255, 0.08);
+                border-radius: 8px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-gap: 20px;
+            }
+            .sd {
+                background-color: rgba(255, 255, 255, 0.08);
+                border-radius: 8px;
+            }
+
+            .options-slider .slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                background-color: #fff;
+                border: 1px solid #ccc;
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
+            .options-slider .slider::-moz-range-thumb {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                background-color: #fff;
+                border: 1px solid #ccc;
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="header-logo">
+            <img src="../img/betterlogo.png">
+            <span class="title">BetterMint</span>
+            <?xml version="1.0" encoding="utf-8"?>
+            <svg id="popoutb" viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"/>
+            </svg>
+            <svg id="settingsb" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512"><path
+                d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z"/></svg>
+            <br>
+            <br>
+
+        </div>
+        <div class="container">
+            <br>
+            <h1 style="text-align: center; font-size: 20px;">Engine Options</h1>
+            <br>
+            <div class="options-checkbox">
+                <input id="option-limit-strength" type="checkbox"/>
+                <label for="option-limit-strength">Limit Strength
+                    <div class="tooltip">
+                        <span
+                            class="material-icons"
+                            style="color: #777777; font-size: 20px !important;">help</span>
+                        <span class="tooltiptext">
+                            <span style="color: #D64045">
+                                Must be enabled to change engine elo. Overrides Skill Level
+                            </span>
+                        </span>
+
+                    </div>
+                </label>
             </div>
-            <input type="file" id="import-file-input" accept=".config" style="display:none">
-          </body>
-        </html>     
+            <div class="options-slider" data-min="1" data-max="50">
+                <div class="title">ENGINE DEPTH:</div>
+                <input id="option-depth" type="range" value="15"/>
+            </div>
+            <div class="options-slider" data-min="1350" data-max="2850">
+                <div class="title">ENGINE ELO:</div>
+                <input id="option-elo" type="range" value="1500"/>
+            </div>
 
-    </div>
+            <div class="options-slider" data-min="1" data-max="20">
+                <div class="title">SKILL LEVEL:</div>
+                <input id="option-skill-level" type="range" value="10"/>
+            </div>
+            <div class="options-slider" data-min="1" data-max="10">
+                <div class="title">LINES:</div>
+                <input id="option-multipv" type="range" value="3"/>
+            </div>
 
-</body>
+            <br>
+            <h1 style="text-align: center;font-size: 20px;">Visuals</h1>
+            <br>
+            <div class="options-checkbox">
+                <input id="option-show-hints" type="checkbox"/>
+                <label for="option-show-hints">Show Hints
+                    <div class="tooltip">
+                        <span
+                            class="material-icons"
+                            style="color: #777777; font-size: 20px !important;">help</span>
+                        <span class="tooltiptext">Enable Hints to show the best next move!</span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="options-checkbox">
+                <input id="option-move-analysis" type="checkbox"/>
+                <label for="option-move-analysis">Move Analysis
+                    <div class="tooltip">
+                        <span
+                            class="material-icons"
+                            style="color: #777777; font-size: 20px !important;">help</span>
+                        <span class="tooltiptext">Enable to rate every move!</span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="options-checkbox">
+                <input id="option-depth-bar" type="checkbox"/>
+                <label for="option-depth-bar">Progress Bar
+                    <div class="tooltip">
+                        <span
+                            class="material-icons"
+                            style="color: #777777; font-size: 20px !important;">help</span>
+                        <span class="tooltiptext">Enable progress bar to see status of the engine!</span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="options-checkbox">
+                <input id="option-evaluation-bar" type="checkbox"/>
+                <label for="option-evaluation-bar">Evaluation Bar
+                    <div class="tooltip">
+                        <span
+                            class="material-icons"
+                            style="color: #777777; font-size: 20px !important;">help</span>
+                        <span class="tooltiptext">Check who's winning! Toggle evaluation bar.</span>
+                    </div>
+                </label>
+            </div>
+            <br>
+            <h1 style="text-align: center; font-size: 20px;">Misc</h1>
+            <br>
+            <div class="options-checkbox">
+                <input id="option-ownbook" type="checkbox"/>
+                <label for="option-ownbook">Book Moves
+                    <div class="tooltip">
+                        <span
+                            class="material-icons"
+                            style="color: #777777; font-size: 20px !important;">help</span>
+                        <span class="tooltiptext">Forces the engine to play as much book moves as possible!</span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="options-checkbox">
+                <input id="option-use-nnue" type="checkbox"/>
+                <label for="option-use-nnue">Use NNUE
+                    <div class="tooltip">
+                        <span
+                            class="material-icons"
+                            style="color: #777777; font-size: 20px !important;">help</span>
+                        <span class="tooltiptext">NNUE is stronger but slower and needs more
+                            computational power. This feature requires a 45Mb .nnue file provided by the
+                            extension</span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="options-checkbox">
+                <input id="option-text-to-speech" type="checkbox"/>
+                <label for="option-text-to-speech">Text To Speech
+                    <div class="tooltip">
+                        <span
+                            class="material-icons"
+                            style="color: #777777; font-size: 20px !important;">help</span>
+                        <span class="tooltiptext">Tells you the best move Verbally!</span>
+                    </div>
+                </label>
+            </div>
+            <div class="options-checkbox">
+                <input id="option-highmatechance" type="checkbox"/>
+                <label for="option-highmatechance">Mate Finder
+                    <div class="tooltip">
+                        <span
+                            class="material-icons"
+                            style="color: #777777; font-size: 20px !important;">help</span>
+                        <span class="tooltiptext">Lets the engine search for close checkmates</span>
+                    </div>
+                </label>
+            </div>
+            <div class="options-slider" data-min="1" data-max="50">
+                <div class="title">Mate Finder Distance:</div>
+                <input id="option-mate-finder-value" type="range" value="3"/>
+            </div>
+
+            <br>
+            <h1 style="text-align: center; font-size: 20px;">Auto-Move Options</h1>
+            <br>
+            <div class="options-checkbox">
+                <input id="option-legit-auto-move" type="checkbox"/>
+                <label for="option-legit-auto-move">Legit Auto Move
+                    <div class="tooltip">
+                        <span
+                            class="material-icons"
+                            style="color: #777777; font-size: 20px !important;">help</span>
+                        <span class="tooltiptext">Let us make the best move for you!
+                            <span style="color: #D64045">
+                                Optimized & Made legit by Mist.#9999.
+                            </span>
+                        </span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="options-checkbox">
+                <input id="option-random-best-move" type="checkbox"/>
+                <label for="option-random-best-move">Random Best Move
+                    <div class="tooltip">
+                        <span
+                            class="material-icons"
+                            style="color: #777777; font-size: 20px !important;">help</span>
+                        <span class="tooltiptext" style="color: #D64045">Needs to be on with legit auto move.</span>
+                    </div>
+                </label>
+            </div>
+            <div class="options-slider" data-min="0" data-max="20">
+                <div class="title">Max Legit Auto Move Depth:</div>
+                <input id="option-max-legit-auto-move-depth" type="range" value="5"/>
+            </div>
+
+            <div class=" options-slider" data-min="0" data-max="30000">
+                <div class="title">Auto Move Delay:</div>
+                <input id="option-auto-move-time" type="range" value="5000"/>
+            </div>
+
+            <div class="options-slider" data-min="0" data-max="50000">
+                <div class="title">Auto Move Delay Randomization:</div>
+                <input id="option-auto-move-time-random" type="range" value="10000"/>
+            </div>
+            <div class="options-slider" data-min="0" data-max="60">
+                <div class="title">Auto Move Delay Randomization Divider:</div>
+                <input id="option-auto-move-time-random-div" type="range" value="10"/>
+            </div>
+
+            <div class="options-slider" data-min="0" data-max="2000">
+                <div class="title">Auto Move Delay Randomization Multiplier:</div>
+                <input id="option-auto-move-time-random-multi" type="range" value="1000"/>
+            </div>
+
+        </div>
+
+        <div style="display: flex;">
+            <button class="button" id="learnmore">Learn More</button>
+
+        </div>
+        <div class="ModalBackground">
+            <div class="settings-content">
+                <div>
+                    <h1>Settings</h1>
+                </div>
+                <br>
+                <br>
+                <hr>
+                <br>
+                <h2>Themes</h2>
+                <br>
+                <div id="themes">
+                    <div id="themesel1">
+                        <br>
+                        <h3>Dark</h2>
+                        <button id="dark" class="button wer">Select</button>
+                    </div>
+                    <div id="themesel2">
+                        <br>
+                        <h3>UltraDark</h2>
+                        <button id="ultradark" class="button wer">Select</button>
+                    </div>
+                </div>
+                <br>
+                <h2>Config</h2>
+                <br>
+                <div class="sd">
+                    <input type="file" id="import-file-input" accept=".config" style="display:none">
+                    <div class="button-container">
+                        <button id="export-btn" class="button" role="button">Export Config</button>
+                        <button id="import-btn" class="button" role="button">Import Config</button>
+                    </div>
+                </div>
+                <button class="close button">Save</button>
+            </div>
+
+        </div>
+        <div class="lmco">
+            <div class="lmcon">
+                <div>
+                    <h1>Features</h1>
+                </div>
+                <br>
+                <hr>
+                <br>
+                <button id="lmc" class="button">Got It!</button>
+            </div>
+        </div>
+    </body>
 
 </html>

@@ -1,7 +1,7 @@
 body {
     min-width: 300px;
     min-height: 500px;
-    background-color: #000000;
+    background-color: #292A2D;
     color: #ffffff;
     padding: 0;
     width: 400px;
@@ -9,7 +9,7 @@ body {
 }
 
 .header-logo {
-    background-color: #7a00ff;
+    background-color: #202123;
     width: 100%;
 }
 
@@ -18,7 +18,7 @@ body {
     margin-left: auto;
     margin-right: auto;
     width: 40%;
-    padding: 15px 0 15px 0px;
+    padding: 15px 0;
 }
 
 * {
@@ -43,8 +43,8 @@ body {
     margin-bottom: 8px;
 }
 
-.options-slider::before,
-.options-slider::after {
+.options-slider::after,
+.options-slider::before {
     position: absolute;
     color: #fff;
     font-size: 0.9rem;
@@ -88,7 +88,7 @@ body {
     background: rgba(255, 255, 255, 0.314);
     outline: none;
     padding: 0;
-    width: 250px;
+    width: 225px;
     margin-right: 25px;
     cursor: pointer;
 }
@@ -144,8 +144,8 @@ body {
     user-select: none;
 }
 
-.options-checkbox input+label::before,
-.options-checkbox input+label::after {
+.options-checkbox input+label::after,
+.options-checkbox input+label::before {
     content: "";
     position: absolute;
     transition: 150ms cubic-bezier(0.24, 0, 0.5, 1);
@@ -171,7 +171,7 @@ body {
 }
 
 .options-checkbox input:checked+label:before {
-    background: #531ce3;
+    background: #5d3fd3;
     transition: all 150ms cubic-bezier(0, 0, 0, 0.1);
 }
 
@@ -183,8 +183,8 @@ body {
     box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.75);
 }
 
-.options-checkbox input:disabled+label:before,
-.options-checkbox input:disabled+label:after {
+.options-checkbox input:disabled+label:after,
+.options-checkbox input:disabled+label:before {
     cursor: not-allowed;
 }
 
@@ -211,7 +211,7 @@ body {
     background: rgba(0, 0, 0, 0.85);
     color: #fff;
     text-align: center;
-    padding: 8px 8px;
+    padding: 8px;
     opacity: 0;
     border-radius: 6px;
     position: absolute;
