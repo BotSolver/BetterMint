@@ -22,6 +22,9 @@ A chess.com extension for analyzing your game during play!
 - Automatically make a move after the first delay with a addition of a random period of time!
 - !! With the right settings you won't be banned.
 
+**Accuracy Controlling Settings**: Self explainatory.
+- We have multiple settings for controlling accuracy.
+
 **AND MUCH MUCH MORE!**
 
 ## Installing the extension

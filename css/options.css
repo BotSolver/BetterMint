@@ -3,14 +3,29 @@ body {
     min-height: 500px;
     background-color: #292A2D;
     color: #ffffff;
+    transition: background-color 0.5s ease;
     padding: 0;
     width: 400px;
     margin: 0;
+    user-select: none;
 }
 
 .header-logo {
     background-color: #202123;
     width: 100%;
+}
+
+.lmcon {
+    text-align: center;
+}
+
+ul {
+    text-align: left;
+    padding-left: 40px;
+}
+
+li {
+    margin-bottom: 10px;
 }
 
 .main-logo {
@@ -80,8 +95,13 @@ body {
     color: #fff;
 }
 
+.credits {
+    color: #1fc01f;
+}
+
 .options-slider input {
     -webkit-appearance: none;
+    appearance: none;
     width: calc(100% - (70px));
     height: 2px;
     border-radius: 8px;
@@ -221,4 +241,14 @@ body {
 .tooltip:hover .tooltiptext {
     visibility: visible;
     opacity: 1;
+}
+
+.betaicon {
+    color: #fff;
+    border-radius: 10px;
+    margin: auto;
+    font-weight: bold;
+    margin-top: 10px;
+    width: 45px;
+    background: aqua;
 }

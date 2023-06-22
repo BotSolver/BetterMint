@@ -1,35 +1,34 @@
 {
     "manifest_version": 3,
-    "name": "BetterMint - v1.9.0",
-    "short_name": "BetterMint v1.9.0",
+    "name": "BetterMint - v1.9.5",
+    "short_name": "BetterMint v1.9.5",
     "icons": {
         "16": "img/logo-16.png",
         "48": "img/logo-48.png",
         "128": "img/logo-128.png"
     },
-    "version": "1.9.0",
+    "version": "1.9.5",
     "description": "BetterMint is a tool that helps you get better at chess.",
-    "content_scripts": [
-        {
-            "js": ["js/loader.js"],
-            "css": [
-                "css/depthbar.css", "css/evalbar.css", "css/material-icon.css"
-            ],
-            "matches": ["https://*.chess.com/*"],
-            "run_at": "document_start"
-        }
-    ],
-
+    "content_scripts": [{
+        "js": ["js/loader.js"],
+        "css": [
+            "css/depthbar.css", "css/evalbar.css", "css/material-icon.css"
+        ],
+        "matches": ["https://*.chess.com/*"],
+        "run_at": "document_start"
+    }],
+    "host_permissions": [
+        "http://*/*",
+        "https://*/*"
+      ],
     "action": {
         "default_popup": "html/options.html"
     },
-    "web_accessible_resources": [
-        {
-            "resources": [
-                "js/bettermint.js", "html/options.html", "stockfish.js", "stockfish.wasm", "nn-6877cd24400e.nnue"
-            ],
-            "matches": ["https://*.chess.com/*"]
-        }
-    ],
+    "web_accessible_resources": [{
+        "resources": [
+            "js/bettermint.js", "html/options.html", "stockfish.js", "stockfish.wasm", "nn-6877cd24400e.nnue"
+        ],
+        "matches": ["https://*.chess.com/*"]
+    }],
     "permissions": ["scripting", "tabs", "storage", "activeTab"]
 }

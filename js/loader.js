@@ -10,10 +10,10 @@ const DefaultExtensionOptions2 = {
     auto_move_time_random_div: 10,
     auto_move_time_random_multi: 1000,
     max_legit_auto_move_depth: 5,
+    best_move_chance: 30,
     matefindervalue: 3,
     limit_strength: false,
-    highmatechance: true,
-    ownbook: false,
+    highmatechance: false,
     random_best_move: false,
     legit_auto_move: false,
     show_hints: true,
@@ -23,11 +23,10 @@ const DefaultExtensionOptions2 = {
     evaluation_bar: true,
     use_nnue: false
 };
+
 function injectScript(file) {
     let script = document.createElement("script");
-    script.src = chrome
-        .runtime
-        .getURL(file);
+    script.src = chrome.runtime.getURL(file);
     let doc = (document.head || document.documentElement);
     // doc.appendChild(script);
     doc.insertBefore(script, doc.firstElementChild);
@@ -35,28 +34,26 @@ function injectScript(file) {
         script.remove();
     };
 }
-chrome
-    .runtime
-    .onMessage
-    .addListener(function (request, sender, sendResponse) {
-        // pass the event to injected script
-        window.dispatchEvent(
-            new CustomEvent("BetterMintUpdateOptions", {detail: request.data})
-        );
-    });
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    // pass the event to injected script
+    if (request.data !== 'popout') {
+        window.dispatchEvent(new CustomEvent("BetterMintUpdateOptions", {
+            detail: request.data
+        }));
+    } else if (request.data == 'popout') {
+        window.postMessage('popout');
+    }
+});
 window.addEventListener("BetterMintGetOptions", function (evt) {
-    chrome
-        .storage
-        .sync
-        .get(DefaultExtensionOptions2, function (opts) {
-            let request = evt.detail;
-            let response = {
-                requestId: request.id,
-                data: opts
-            };
-            window.dispatchEvent(
-                new CustomEvent("BetterMintSendOptions", {detail: response})
-            );
-        });
+    chrome.storage.sync.get(DefaultExtensionOptions2, function (opts) {
+        let request = evt.detail;
+        let response = {
+            requestId: request.id,
+            data: opts
+        };
+        window.dispatchEvent(new CustomEvent("BetterMintSendOptions", {
+            detail: response
+        }));
+    });
 });
 injectScript("js/bettermint.js"); // Injects bettermint.js Web-side
