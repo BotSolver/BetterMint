@@ -694,7 +694,7 @@ class StockfishEngine {
                 }
             }
         }
-        if (bestMoveSelected) {
+        if (bestMoveSelected && this.master.options.legit_auto_move) {
             // If a best move has been selected, consider all moves in topMoves
             top_pv_moves = this.topMoves.slice(0, this.options["MultiPV"]); // sort by rank in multipv
         } else { // if da best move aint been selected yet
@@ -752,6 +752,10 @@ class StockfishEngine {
             const randomMoveIndex = Math.floor(Math.random() * top_pv_moves.length);
             const randomMove = top_pv_moves[randomMoveIndex];
             top_pv_moves = [randomMove, ...top_pv_moves.filter(move => move !== randomMove)]; // Move the random move to the front of the PV moves
+        }
+
+        if (!this.master.options.legit_auto_move) { // random crap with auto move
+            top_pv_moves = this.topMoves.slice(0, this.options["MultiPV"]);
         }
 
         this.master.game.HintMoves(top_pv_moves, this.lastTopMoves, isBestMove);
