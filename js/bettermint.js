@@ -710,7 +710,13 @@ class StockfishEngine {
 
         if (bestMoveSelected) {
             // If a best move has been selected, consider all moves in topMoves
-            top_pv_moves = this.topMoves.slice(0, this.options["MultiPV"]); // sort by rank in multipv
+            top_pv_moves = this.topMoves.slice(0, this.options["MultiPV"]);
+            // sort by rank in multipv
+            this.master.game.HintMoves(top_pv_moves, this.lastTopMoves, isBestMove);
+
+            if (this.master.options.move_analysis) {
+                this.AnalyzeLastMove();
+            } 
         } else { // if da best move aint been selected yet
             if (this.master.options.legit_auto_move) { // legit move stuff, ignore
                 const movesWithAccuracy = this.topMoves.filter(move => move.accuracy !== undefined);
@@ -766,12 +772,6 @@ class StockfishEngine {
             const randomMoveIndex = Math.floor(Math.random() * top_pv_moves.length);
             const randomMove = top_pv_moves[randomMoveIndex];
             top_pv_moves = [randomMove, ...top_pv_moves.filter(move => move !== randomMove)]; // Move the random move to the front of the PV moves
-        }
-
-        this.master.game.HintMoves(top_pv_moves, this.lastTopMoves, isBestMove);
-
-        if (this.master.options.move_analysis) {
-            this.AnalyzeLastMove();
         }
         if (bestMoveSelected && this.master.options.legit_auto_move && this.master.game.controller.getPlayingAs() === this.master.game.controller.getTurn()) {
             let bestMove;
