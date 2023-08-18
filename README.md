@@ -6,7 +6,7 @@
 </p>
 
 # BetterMint
-A chess.com extension for analyzing your game during play!
+A chess.com extension for analyzing your game during & after play!
 
 ## Installing the extension
 This extension is for any browser you can import a extension into!
