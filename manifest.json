@@ -9,26 +9,48 @@
     },
     "version": "1.9.5",
     "description": "BetterMint is a tool that helps you get better at chess.",
+    "permissions": [
+        "scripting",
+        "tabs",
+        "storage",
+        "activeTab",
+        "declarativeNetRequest",
+        "declarativeNetRequestWithHostAccess",
+        "declarativeNetRequestFeedback"
+    ],
+    "host_permissions": [
+        "http://*.chess.com/*",
+        "https://*.chess.com/*"
+    ],
     "content_scripts": [{
         "js": ["js/loader.js"],
         "css": [
-            "css/depthbar.css", "css/evalbar.css", "css/material-icon.css"
+            "css/depthbar.css",
+            "css/evalbar.css",
+            "css/material-icon.css"
         ],
-        "matches": ["https://*.chess.com/*"],
+        "matches": [
+            "https://*.chess.com/*"
+        ],
         "run_at": "document_start"
     }],
-    "host_permissions": [
-        "http://*/*",
-        "https://*/*"
-      ],
+    "declarative_net_request": {
+        "rule_resources": [{
+            "id": "ruleset_1",
+            "enabled": true,
+            "path": "rules.json"
+        }]
+    },
     "action": {
         "default_popup": "html/options.html"
     },
     "web_accessible_resources": [{
         "resources": [
-            "js/bettermint.js", "html/options.html", "stockfish.js", "stockfish.wasm", "nn-6877cd24400e.nnue"
+            "js/bettermint.js",
+            "html/options.html"
         ],
-        "matches": ["https://*.chess.com/*"]
-    }],
-    "permissions": ["scripting", "tabs", "storage", "activeTab"]
+        "matches": [
+            "https://*.chess.com/*"
+        ]
+    }]
 }

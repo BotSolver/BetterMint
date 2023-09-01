@@ -540,7 +540,6 @@ class StockfishEngine {
                     const index = this.topMoves.findIndex(object => object.move === match[1]);
                     if (index < 0) {
                         console.assert(false, `The engine returned the best move "${match[1]}" but it's not in the top move list: `, this.topMoves);
-                        debugger;
                     }
                     this.onTopMoves(this.topMoves[index], true);
                 }
