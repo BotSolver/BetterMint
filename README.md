@@ -14,23 +14,23 @@
 <p align="center">Let's unlock the magic:</p>
 
 <p align="center">
-  - **Download the extension and extract it**: [Latest Version](https://github.com/BotSolver/BetterMint/releases/download/bettermint/BetterMint.zip)
+  - <strong>Download the extension and extract it</strong>: [Latest Version](https://github.com/BotSolver/BetterMint/releases/download/bettermint/BetterMint.zip)
 </p>
 
 <p align="center">
-  - **Access the mystical extensions realm by entering `chrome://extensions` in a new tab or visiting the `Manage extensions` page**. No cheating shortcuts here!
+  - <strong>Access the mystical extensions realm by entering `chrome://extensions` in a new tab or visiting the `Manage extensions` page</strong>. No cheating shortcuts here scum!
 </p>
 
 <p align="center">
-  - **Embrace your inner wizard and enable `Developer mode` in the top right corner**. True chess mastery comes from dedication, not magic tricks!
+  - <strong>Embrace your inner wizard and enable `Developer mode` in the top right corner</strong>. True chess mastery comes from dedication, not magic tricks!
 </p>
 
 <p align="center">
-  - A **secret button named `Load unpacked` will appear in the top left corner**; give it a tap.
+  - A <strong>secret button named `Load unpacked` will appear in the top left corner</strong>; give it a tap.
 </p>
 
 <p align="center">
-  - **Select the enchanted folder you extracted earlier** (look for the mystical `manifest.json` file). No hidden spells here, just a simple process!
+  - <strong>Select the enchanted folder you extracted earlier</strong> (look for the mystical `manifest.json` file). No hidden spells here, just a simple process!
 </p>
 
 <p align="center">For detailed instructions, consult the [official guide](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked).</p>
