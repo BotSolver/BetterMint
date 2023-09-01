@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="450" src="https://cdn.discordapp.com/attachments/1017565672622006303/1089946864717144094/image.png">
+  <img width="600" src="https://cdn.discordapp.com/attachments/1017565672622006303/1089946864717144094/image.png">
   <br><br>
   <a href="https://discord.gg/basic"><img alt="BetterMint discord!" src="https://img.shields.io/badge/Discord-BetterMint-0?style=flat&logo=discord"></a>
   <a href="https://github.com/BotSolver/BetterMint/releases"><img alt="Download BetterMint" src="https://img.shields.io/github/downloads/BotSolver/BetterMint/total?color=%2331c754&label=Download&logo=googlechrome&logoColor=%23ffffff"></a>
