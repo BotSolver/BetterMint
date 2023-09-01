@@ -7,30 +7,30 @@
 
 <h1 align="center">👑 BetterMint: Your Chess.com Companion! ♟️</h1>
 
-<p align="center">Introducing BetterMint, the chess.com extension that turns your game into a grandmaster experience! But hey, don't think you can cheat your way to victory—chess is all about strategy and learning.</p>
+<p align="center">Introducing **BetterMint**, the chess.com extension that turns your game into a grandmaster experience! But hey, don't think you can cheat your way to victory—chess is all about strategy and learning.</p>
 
 <h2 align="center">🚀 Installing the Extension</h2>
 
 <p align="center">Prepare for the magic:</p>
 
 <p align="center">
-  - Download the extension and extract it: [Latest Version](https://github.com/BotSolver/BetterMint/releases/download/bettermint/BetterMint.zip)
+  - **Download the extension and extract it**: [Latest Version](https://github.com/BotSolver/BetterMint/releases/download/bettermint/BetterMint.zip)
 </p>
 
 <p align="center">
-  - Open the portal to the extensions realm by entering `chrome://extensions` in a new tab or visiting the `Manage extensions` page. No shortcuts for cheating here!
+  - **Open the portal to the extensions realm by entering `chrome://extensions` in a new tab or visiting the `Manage extensions` page**. No shortcuts for cheating here!
 </p>
 
 <p align="center">
-  - Channel your inner wizard and enable `Developer mode` on the top right corner. Remember, true chess mastery comes from practice, not shortcuts!
+  - **Channel your inner wizard and enable `Developer mode` on the top right corner**. Remember, true chess mastery comes from practice, not shortcuts!
 </p>
 
 <p align="center">
-  - A secret button named `Load unpacked` will appear on the top left corner; give it a click.
+  - A **secret button named `Load unpacked` will appear on the top left corner**; give it a click.
 </p>
 
 <p align="center">
-  - Select the enchanted folder you just extracted (look for the mystical `manifest.json`). No hidden spells, just a straightforward process!
+  - **Select the enchanted folder you just extracted** (look for the mystical `manifest.json`). No hidden spells, just a straightforward process!
 </p>
 
 <p align="center">For more spellcasting details, consult the [official instructions](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked).</p>
@@ -41,7 +41,7 @@
 
 <h1 align="center">🔮 Features</h1>
 
-<p align="center">Behold the magical arsenal of BetterMint:</p>
+<p align="center">Behold the magical arsenal of **BetterMint**:</p>
 
 <p align="center">
   <ul>
