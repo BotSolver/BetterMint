@@ -7,7 +7,7 @@
 
 <h1 align="center">👑 BetterMint: Your Chess.com Companion! ♟️</h1>
 
-<p align="center">Introducing __BetterMint__, the chess.com extension that turns your game into a grandmaster experience! But hey, don't think you can cheat your way to victory—chess is all about strategy and learning.</p>
+<p align="center">Introducing _BetterMint_, the chess.com extension that turns your game into a grandmaster experience! But hey, don't think you can cheat your way to victory—chess is all about strategy and learning.</p>
 
 <h2 align="center">🚀 Installing the Extension</h2>
 
