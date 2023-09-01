@@ -14,30 +14,30 @@
 <p align="center">Let's unlock the magic:</p>
 
 <p align="center">
-  - <strong>Download the extension and extract it</strong>: [Latest Version](https://github.com/BotSolver/BetterMint/releases/download/bettermint/BetterMint.zip)
+  - <strong>Download the extension and extract it</strong>: <a href="https://github.com/BotSolver/BetterMint/releases/download/bettermint/BetterMint.zip">Latest Version</a>
 </p>
 
 <p align="center">
-  - <strong>Access the mystical extensions realm by entering `chrome://extensions` in a new tab or visiting the `Manage extensions` page</strong>. No cheating shortcuts here scum!
+  - <strong>Access the mystical extensions realm by entering <code>chrome://extensions</code> in a new tab or visiting the <code>Manage extensions</code> page</strong>. No cheating shortcuts here scum!
 </p>
 
 <p align="center">
-  - <strong>Embrace your inner wizard and enable `Developer mode` in the top right corner</strong>. True chess mastery comes from dedication, not magic tricks!
+  - <strong>Embrace your inner wizard and enable <code>Developer mode</code> in the top right corner</strong>. True chess mastery comes from dedication, not magic tricks!
 </p>
 
 <p align="center">
-  - A <strong>secret button named `Load unpacked` will appear in the top left corner</strong>; give it a tap.
+  - A <strong>secret button named <code>Load unpacked</code> will appear in the top left corner</strong>; give it a tap.
 </p>
 
 <p align="center">
-  - <strong>Select the enchanted folder you extracted earlier</strong> (look for the mystical `manifest.json` file). No hidden spells here, just a simple process!
+  - <strong>Select the enchanted folder you extracted earlier</strong> (look for the mystical <code>manifest.json</code> file). No hidden spells here, just a simple process!
 </p>
 
-<p align="center">For detailed instructions, consult the [official guide](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked).</p>
+<p align="center">For detailed instructions, consult the <a href="https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked">official guide</a>.</p>
 
 <h2 align="center">🧙‍♂️ Important</h2>
 
-<p align="center">Before we embark on this magical journey, a reminder: I'm not claiming to be the original wizard behind this extension. The first developer was thedemons ([GitHub](https://github.com/thedemons)), but it seems they've left the project to us mere mortals. While I work on updates, let's remember and honor the original wizard!</p>
+<p align="center">Before we embark on this magical journey, a reminder: I'm not claiming to be the original wizard behind this extension. The first developer was thedemons (<a href="https://github.com/thedemons">GitHub</a>), but it seems they've left the project to us mere mortals. While I work on updates, let's remember and honor the original wizard!</p>
 
 <h1 align="center">🔮 Features</h1>
 
