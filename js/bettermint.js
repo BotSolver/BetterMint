@@ -953,16 +953,29 @@ function InitBetterMint(chessboard) {
             }
         });
 }
-customElements
-    .whenDefined("chess-board")
-    .then(function (ctor) {
-        ctor.prototype._createGame = ctor.prototype.createGame;
-        ctor.prototype.createGame = function (e) {
-            let result = this._createGame(e);
-            InitBetterMint(this);
-            return result;
-        };
-    });
+function createGameHook(ctor) {
+    ctor.prototype._createGame = ctor.prototype.createGame;
+    ctor.prototype.createGame = function (e) {
+        let result = this._createGame(e);
+        InitBetterMint(this);
+        return result;
+    };
+}
+
+customElements.whenDefined("wc-chess-board").then(function (ctor) {
+    window.ctor = ctor;
+    createGameHook(ctor);
+}).catch(function () {
+    // This code will run if "wc-chess-board" is not defined
+    console.log("wc-chess-board not found. Using chess-board instead.");
+});
+
+customElements.whenDefined("chess-board").then(function (ctor) {
+    window.ctor = ctor;
+    createGameHook(ctor);
+}).catch(function () {
+    console.log("chess-board not found.");
+});
 
 window.onload = function () {
     var url = window.location.href;
