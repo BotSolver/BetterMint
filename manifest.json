@@ -1,22 +1,17 @@
 {
     "manifest_version": 3,
-    "name": "BetterMint - v1.9.5",
-    "short_name": "BetterMint v1.9.5",
+    "name": "BetterMint - Chess",
+    "short_name": "BetterMint - Chess",
     "icons": {
         "16": "img/logo-16.png",
         "48": "img/logo-48.png",
         "128": "img/logo-128.png"
     },
-    "version": "1.9.5",
+    "version": "1.9.82",
     "description": "BetterMint is a tool that helps you get better at chess.",
     "permissions": [
-        "scripting",
-        "tabs",
         "storage",
-        "activeTab",
-        "declarativeNetRequest",
-        "declarativeNetRequestWithHostAccess",
-        "declarativeNetRequestFeedback"
+        "declarativeNetRequest"
     ],
     "host_permissions": [
         "http://*.chess.com/*",

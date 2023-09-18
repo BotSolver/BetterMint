@@ -493,22 +493,20 @@ class StockfishEngine {
     ProcessMessage(event) {
         this.ready = false;
         let line = (event && typeof event === "object") ? event.data : event;
-        // console.log("SF: " + line);
+    
         if (line === 'uciok') {
             this.loaded = true;
             this.master.onEngineLoaded();
-        }
-        else if (line === 'readyok') {
+        } else if (line === 'readyok') {
             this.ready = true;
             if (this.readyCallbacks.length > 0) {
                 let copy = this.readyCallbacks;
                 this.readyCallbacks = [];
                 copy.forEach(function (callback) { callback(); });
             }
-        }
-        else if (this.isEvaluating && line === 'Load eval file success: 1') {
-            // we have sent the "go" command before stockfish loaded the eval file
-            // this.isEvaluating will be stuck at true, this fixes it.
+        } else if (this.isEvaluating && line === 'Load eval file success: 1') {
+            // We have sent the "go" command before Stockfish loaded the eval file.
+            // This.isEvaluating will be stuck at true; this fixes it.
             this.isEvaluating = false;
             this.isRequestedStop = false;
             if (this.goDoneCallbacks.length > 0) {
@@ -516,32 +514,36 @@ class StockfishEngine {
                 this.goDoneCallbacks = [];
                 copy.forEach(function (callback) { callback(); });
             }
-        }
-        else {
-            let match = line.match(/^info .*\bdepth (\d+) .*\bseldepth (\d+) .*\bmultipv (\d+) .*\bscore (\w+) (-?\d+) .*\bpv (.+)/);
-            if (match) {
+        } else {
+            let infoMatch = line.match(/^info .*\bdepth (\d+) .*\bseldepth (\d+) .*\bmultipv (\d+) .*\bscore (\w+) (-?\d+) .*\bpv (.+)/);
+            let bestMoveMatch = line.match(/^bestmove ([a-h][1-8][a-h][1-8][qrbn]?)?/);
+    
+            if (infoMatch) {
                 if (!this.isRequestedStop) {
-                    let cp = (match[4] == "cp") ? parseInt(match[5]) : null;
-                    let mate = (match[4] == "cp") ? null : parseInt(match[5]);
-                    let move = new TopMove(match[6], parseInt(match[1]), cp, mate);
-                    if (parseInt(match[3]) <= this.master.options.multipv) { // check multipv against master options
+                    let cp = (infoMatch[4] === "cp") ? parseInt(infoMatch[5]) : null;
+                    let mate = (infoMatch[4] === "mate") ? parseInt(infoMatch[5]) : null;
+                    let move = new TopMove(infoMatch[6], parseInt(infoMatch[1]), cp, mate);
+                    if (parseInt(infoMatch[3]) <= this.master.options.multipv) { // Check multipv against master options
                         this.onTopMoves(move, false);
                     }
                 }
-            }
-            else if (match = line.match(/^bestmove ([a-h][1-8][a-h][1-8][qrbn]?)?/)) {
+            } else if (bestMoveMatch) {
                 this.isEvaluating = false;
                 if (this.goDoneCallbacks.length > 0) {
                     let copy = this.goDoneCallbacks;
                     this.goDoneCallbacks = [];
                     copy.forEach(function (callback) { callback(); });
                 }
-                if (!this.isRequestedStop && match[1] !== undefined) {
-                    const index = this.topMoves.findIndex(object => object.move === match[1]);
+                if (!this.isRequestedStop && bestMoveMatch[1] !== undefined) {
+                    const bestMove = bestMoveMatch[1];
+                    const index = this.topMoves.findIndex(object => object.move === bestMove);
+    
                     if (index < 0) {
-                        console.assert(false, `The engine returned the best move "${match[1]}" but it's not in the top move list: `, this.topMoves);
+                        // The engine's best move is not in the top move list; handle it gracefully
+                        console.warn(`The engine returned the best move "${bestMove}" but it's not in the top move list.`);
+                    } else {
+                        this.onTopMoves(this.topMoves[index], true);
                     }
-                    this.onTopMoves(this.topMoves[index], true);
                 }
                 this.isRequestedStop = false;
             }

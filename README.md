@@ -1,109 +1,45 @@
 <p align="center">
-  <img width="600" src="https://cdn.discordapp.com/attachments/1017565672622006303/1089946864717144094/image.png">
-  <br><br>
-  <a href="https://discord.gg/basic"><img alt="BetterMint discord!" src="https://img.shields.io/badge/Discord-BetterMint-0?style=flat&logo=discord"></a>
-  <a href="https://github.com/BotSolver/BetterMint/releases"><img alt="Download BetterMint" src="https://img.shields.io/github/downloads/BotSolver/BetterMint/total?color=%2331c754&label=Download&logo=googlechrome&logoColor=%23ffffff"></a>
+    <img width="350" src="https://cdn.discordapp.com/attachments/1017565672622006303/1089946864717144094/image.png">
+    <br><br>
+    <a href="https://discord.gg/basic"><img alt="BetterMint discord!" src="https://img.shields.io/badge/Discord-BetterMint-0?style=flat&logo=discord"></a>
+    <a href="https://github.com/BotSolver/BetterMint/releases"><img alt="Download BetterMint" src="https://img.shields.io/github/downloads/BotSolver/BetterMint/total?color=%2331c754&label=Download&logo=googlechrome&logoColor=%23ffffff"></a>
 </p>
 
-<h1 align="center">👑 BetterMint: Your Chess.com Companion! ♟️</h1>
+# BetterMint
+A chess.com extension for analyzing your game during play!
 
-<p align="center">Welcome to BetterMint, the magical chess.com extension that takes your game to the next level! But remember, true chess mastery comes from practice and learning, not shortcuts.</p>
+## Added Features
 
-<h2 align="center">🚀 Installing the Extension</h2>
+**Legit Auto Move**: Let the computer make moves for you.
+- Automatically make a move after it had finished thinking, it will be a random best move!
+- !! Now okay for use aganist players!
 
-<p align="center">Let's unlock the magic:</p>
+**Auto Move Delay**: Let's delay that computer a bit.
+- Automatically make a move after a certain period of time.
+- !! Helps to learn timings!
 
-<p align="center">
-  - <strong>Download the extension and extract it</strong>: <a href="https://github.com/BotSolver/BetterMint/releases/download/bettermint/BetterMint.zip">Latest Version</a>
-</p>
+**Auto Move Delay Randomization**: Let's add some stuff.
+- Automatically make a move after the first delay with a addition of a random period of time!
+- !! With the right settings you won't be bad at timings.
 
-<p align="center">
-  - <strong>Access the mystical extensions realm by entering <code>chrome://extensions</code> in a new tab or visiting the <code>Manage extensions</code> page</strong>. No cheating shortcuts here scum!
-</p>
+**Accuracy Controlling Settings**: Self explainatory.
+- We have multiple settings for controlling accuracy.
 
-<p align="center">
-  - <strong>Embrace your inner wizard and enable <code>Developer mode</code> in the top right corner</strong>. True chess mastery comes from dedication, not magic tricks!
-</p>
+**AND MUCH MUCH MORE!**
 
-<p align="center">
-  - A <strong>secret button named <code>Load unpacked</code> will appear in the top left corner</strong>; give it a tap.
-</p>
+## Installing the extension
+This extension is for any browser you can import a extension into!
 
-<p align="center">
-  - <strong>Select the enchanted folder you extracted earlier</strong> (look for the mystical <code>manifest.json</code> file). No hidden spells here, just a simple process!
-</p>
+You must install it manually by following the steps below:
 
-<p align="center">For detailed instructions, consult the <a href="https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked">official guide</a>.</p>
+- Download the extension and extract it: [Latest Version](https://github.com/BotSolver/BetterMint/releases/download/bettermint/BetterMint.zip)
+- Go to the Extensions page by entering `chrome://extensions` in a new tab, or go to the `Manage extensions` page.
+- On the top right corner, you should see an option named `Developer mode`, enable it.
+- A button named `Load unpacked` will show up in the top left corner, click it.
+- Select the extension folder which you have just extracted. *The right folder should have a file called `manifest.json` in it*.
 
-<h2 align="center">🧙‍♂️ Important</h2>
+*For more details, see [the official instructions](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked)*.
 
-<p align="center">Before we embark on this magical journey, a reminder: I'm not claiming to be the original wizard behind this extension. The first developer was thedemons (<a href="https://github.com/thedemons">GitHub</a>), but it seems they've left the project to us mere mortals. While I work on updates, let's remember and honor the original wizard!</p>
+## Important
 
-<h1 align="center">🔮 Features</h1>
-
-<p align="center">Behold the magical powers of BetterMint:</p>
-
-<h3 align="center">🌟 In-Game Wizardry</h3>
-
-<p align="center">
-  <ul>
-    <li>
-      <strong>Depth</strong>: Dive into the chess cosmos! Control the maximum depth the engine searches during analysis. Deeper analysis means a more thorough understanding of the game, but be patient; it demands time.
-    </li>
-    <li>
-      <strong>Skill Level</strong>: Adjust the engine's playing strength. Higher values make it a grandmaster; lower values, a novice. But remember, true mastery comes from learning, not shortcuts.
-    </li>
-    <li>
-      <strong>Lines</strong>: Explore multiple paths to victory. Determine the number of principal variations the engine shares, revealing its top moves and evaluations.
-    </li>
-    <li>
-      <strong>Threads</strong>: Unleash the power of parallel dimensions! Specify the number of CPU threads for faster analysis. Quality over quantity!
-    </li>
-  </ul>
-</p>
-
-<h3 align="center">🧪 Experimental Spells</h3>
-
-<p align="center">
-  <ul>
-    <li>
-      <strong>NNUE</strong>: Unlock the secrets of "Efficiently Updatable Neural Network" (NNUE). It provides precise position assessments.
-    </li>
-    <li>
-      <strong>Auto Move Time</strong>: Master the art of time manipulation. Delay auto moves strategically.
-    </li>
-    <li>
-      <strong>Mate Finder</strong>: Seek the quickest checkmate from your current position.
-    </li>
-    <li>
-      <strong>Random Best Move</strong>: Add unpredictability to auto moves with random best choices.
-    </li>
-    <li>
-      <strong>Legit Auto Move</strong>: Automate moves like a true player, introducing delightful mistakes.
-    </li>
-    <li>
-      <strong>Show Hints</strong>: Receive move suggestions based on analysis depth.
-    </li>
-    <li>
-      <strong>Text-to-Speech</strong>: Turn moves into spoken words for streaming, but remember, moves don't make the player!
-    </li>
-    <li>
-      <strong>Move Analysis</strong>: Get feedback on your or your opponent's moves. Learning from mistakes is true magic!
-    </li>
-  </ul>
-</p>
-
-<h3 align="center">📊 Progress Tracking</h3>
-
-<p align="center">
-  <ul>
-    <li>
-      <strong>Depth Bar</strong>: Witness the magic unfold! The Depth Bar shows the engine's analysis progress.
-    </li>
-    <li>
-      <strong>Evaluation Bar</strong>: Discover your position's secrets! The Evaluation Bar indicates if you're on the path to victory.
-    </li>
-  </ul>
-</p>
-
-<p align="center">Remember, BetterMint is a tool to enhance your learning, not a shortcut to mastery. Embrace the magic of chess through practice and dedication!</p>
+- I by no means claiming that I fully made this extension, the first dev was thedemons (https://github.com/thedemons) but it seems he has dropped the project so I am making my own update, do still show support to him.
