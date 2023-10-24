@@ -7,6 +7,8 @@
 
 <h1 align="center">👑 BetterMint: Your Chess.com Companion! ♟️</h1>
 
+<h1 align="center">DO NOT USE, CURRENTLY DETECTED AS CHESS.COM HAS SPECIFICALLY TARGETED US, WAIT FOR V2 IN OUR DISCORD!!</h1>
+
 <p align="center">Welcome to BetterMint, the magical chess.com extension that takes your game to the next level! But remember, true chess mastery comes from practice and learning, not shortcuts.</p>
 
 <h2 align="center">🚀 Installing the Extension</h2>
