@@ -35,10 +35,10 @@ var __awaiter = (this && this.__awaiter) || function (
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var master;
+var selfmaster;
 var Config = undefined;
 var context = undefined;
-var ecoTable = null;
+var eTable = null;
 class TopMove {
     constructor(line, depth, cp, mate) {
         this.line = line.split(" ");
@@ -60,8 +60,8 @@ class TopMove {
     }
 }
 class GameController {
-    constructor(master, chessboard) {
-        this.master = master;
+    constructor(selfmaster, chessboard) {
+        this.selfmaster = selfmaster;
         this.chessboard = chessboard;
         this.controller = chessboard.game;
         this.options = this
@@ -112,7 +112,7 @@ class GameController {
                 });
     }
     UpdateExtensionOptions() {
-        let options = this.master.options;
+        let options = this.selfmaster.options;
         if (options.evaluation_bar && this.evalBar == null) 
             this.CreateAnalysisTools();
         else if (!options.evaluation_bar && this.evalBar != null) {
@@ -156,7 +156,7 @@ class GameController {
             if (layoutMain == null) 
                 return;
             clearInterval(interval1);
-            if (this.master.options.depth_bar && this.depthBar == null) {
+            if (this.selfmaster.options.depth_bar && this.depthBar == null) {
                 // create depth bar
                 let depthBar = document.createElement("div");
                 depthBar
@@ -166,7 +166,7 @@ class GameController {
                 layoutMain.insertBefore(depthBar, layoutChessboard.nextSibling);
                 this.depthBar = depthBar.querySelector(".depthBarProgress");
             }
-            if (this.master.options.evaluation_bar && this.evalBar == null) {
+            if (this.selfmaster.options.evaluation_bar && this.evalBar == null) {
                 // create eval bar
                 let evalBar = document.createElement("div");
                 evalBar.style.flex = "1 1 auto;";
@@ -215,7 +215,7 @@ class GameController {
             .controller
             .getFEN();
         this
-            .master
+            .selfmaster
             .engine
             .UpdatePosition(FENs, isNewGame);
         this.SetCurrentDepth(0);
@@ -241,7 +241,7 @@ class GameController {
         this.currentMarkings = [];
     }
     HintMoves(topMoves, lastTopMoves, isBestMove) {
-        let options = this.master.options;
+        let options = this.selfmaster.options;
         let bestMove = topMoves[0];
         if (options.show_hints) {
             this.RemoveCurrentMarkings();
@@ -301,7 +301,7 @@ class GameController {
                     ? bestMove.depth
                     : bestMove.depth - 1
             )
-            / this.master.engine.depth * 100;
+            / this.selfmaster.engine.depth * 100;
             this.SetCurrentDepth(depthPercent);
         }
         if (options.evaluation_bar) {
@@ -311,35 +311,35 @@ class GameController {
             this.SetEvaluation(score, bestMove.mate != null);
         }
     }
-    SetCurrentDepth(percent) {
+    SetCurrentDepth(percentage) {
         if (this.depthBar == null)
             return;
         let style = this.depthBar.style;
-        if (percent <= 0) {
+        if (percentage <= 0) {
             this.depthBar.classList.add("disable-transition");
             style.width = `0%`;
             this.depthBar.classList.remove("disable-transition");
         }
         else {
-            if (percent > 100)
-                percent = 100;
-            style.width = `${percent}%`;
+            if (percentage > 100)
+                percentage = 100;
+            style.width = `${percentage}%`;
         }
     }
     SetEvaluation(score, isMate) {
         if (this.evalBar == null)
             return;
-        var percent, textScore, textScoreAbb;
+        var percentage, textNumber, textScoreAbb;
         if (!isMate) {
             let eval_max = 500;
             let eval_min = -500;
             let smallScore = score /100;
-            percent = 90 - (((score - eval_min) / (eval_max - eval_min)) * (95 - 5)) + 5;
-            if (percent < 5) 
-                percent = 5;
-            else if (percent > 95) 
-                percent = 95;
-            textScore = (
+            percentage = 90 - (((score - eval_min) / (eval_max - eval_min)) * (95 - 5)) + 5;
+            if (percentage < 5) 
+                percentage = 5;
+            else if (percentage > 95) 
+                percentage = 95;
+            textNumber = (
                 score >= 0
                     ? "+"
                     : ""
@@ -348,16 +348,16 @@ class GameController {
                 .abs(smallScore)
                 .toFixed(1);
         } else {
-            percent = score < 0
+            percentage = score < 0
                 ? 100
                 : 0;
-            textScore = "M" + Math
+            textNumber = "M" + Math
                 .abs(score)
                 .toString();
-            textScoreAbb = textScore;
+            textScoreAbb = textNumber;
         }
-        this.evalBarFill.style.transform = `translate3d(0px, ${percent}%, 0px)`;
-        this.evalScore.innerText = textScore;
+        this.evalBarFill.style.transform = `translate3d(0px, ${percentage}%, 0px)`;
+        this.evalScore.innerText = textNumber;
         this.evalScoreAbbreviated.innerText = textScoreAbb;
         let classSideAdd = (score >= 0)
             ? "evaluation-bar-dark"
@@ -385,10 +385,10 @@ class GameController {
 }
 
 class StockfishEngine {
-    constructor(master) {
+    constructor(selfmaster) {
         let stockfishJsURL;
         let stockfishPathConfig = Config.threadedEnginePaths.stockfish;
-        this.master = master;
+        this.selfmaster = selfmaster;
         this.loaded = false;
         this.ready = false;
         this.isEvaluating = false;
@@ -400,18 +400,18 @@ class StockfishEngine {
         this.isInTheory = false;
         this.lastMoveScore = null;
         this.threads = 10;
-        this.depth = this.master.options.depth;
+        this.depth = this.selfmaster.options.depth;
         this.options = {
-            "UCI_Elo": this.master.options.elo,
-            "UCI_LimitStrength": this.master.options.limit_strength,
-            "Skill Level": this.master.options.skill_level,
-            "OwnBook": this.master.options.own_book,
+            "UCI_Elo": this.selfmaster.options.elo,
+            "UCI_LimitStrength": this.selfmaster.options.limit_strength,
+            "Skill Level": this.selfmaster.options.skill_level,
+            "OwnBook": this.selfmaster.options.own_book,
         }
         try {
             new SharedArrayBuffer(1024);
             stockfishJsURL = `${stockfishPathConfig.multiThreaded.loader}#${stockfishPathConfig.multiThreaded.engine}`;
             this.options["Threads"] = 10;
-            if (this.master.options.use_nnue) {
+            if (this.selfmaster.options.use_nnue) {
                 this.options["Use NNUE"] = true;
                 this.options["EvalFile"] = stockfishPathConfig.multiThreaded.nnue;
             }
@@ -419,7 +419,7 @@ class StockfishEngine {
             stockfishJsURL = `${stockfishPathConfig.singleThreaded.loader}#${stockfishPathConfig.singleThreaded.engine}`;
         }
         //this.options["Hash"] = 1024;
-        this.options["MultiPV"] = this.master.options.multipv;
+        this.options["MultiPV"] = this.selfmaster.options.multipv;
         this.options["Ponder"] = true;
         try {
             this.stockfish = new Worker(stockfishJsURL);
@@ -477,7 +477,7 @@ class StockfishEngine {
         });
     }
     UpdateExtensionOptions() {
-        this.depth = this.master.options.depth;
+        this.depth = this.selfmaster.options.depth;
         // trigger this method to show hints, analysis,.. if it was disabled before
         // if this.isEvaluating is false, it already found the best move
         if (this.topMoves.length > 0)
@@ -496,7 +496,7 @@ class StockfishEngine {
     
         if (line === 'uciok') {
             this.loaded = true;
-            this.master.onEngineLoaded();
+            this.selfmaster.onEngineLoaded();
         } else if (line === 'readyok') {
             this.ready = true;
             if (this.readyCallbacks.length > 0) {
@@ -523,7 +523,7 @@ class StockfishEngine {
                     let cp = (infoMatch[4] === "cp") ? parseInt(infoMatch[5]) : null;
                     let mate = (infoMatch[4] === "mate") ? parseInt(infoMatch[5]) : null;
                     let move = new TopMove(infoMatch[6], parseInt(infoMatch[1]), cp, mate);
-                    if (parseInt(infoMatch[3]) <= this.master.options.multipv) { // Check multipv against master options
+                    if (parseInt(infoMatch[3]) <= this.selfmaster.options.multipv) { // Check multipv against selfmaster options
                         this.onTopMoves(move, false);
                     }
                 }
@@ -556,11 +556,11 @@ class StockfishEngine {
             this.lastMoveScore = null;
             this.topMoves = [];
             if (isNewGame)
-                this.isInTheory = ecoTable != null;
+                this.isInTheory = eTable != null;
             ;
             if (this.isInTheory) {
-                let shortFen = this.master.game.controller.getFEN().split(" ").slice(0, 3).join(" ");
-                if (ecoTable.get(shortFen) !== true)
+                let shortFen = this.selfmaster.game.controller.getFEN().split(" ").slice(0, 3).join(" ");
+                if (eTable.get(shortFen) !== true)
                     this.isInTheory = false;
             }
             if (FENs != null)
@@ -579,7 +579,7 @@ class StockfishEngine {
     }
     AnalyzeLastMove() {
         this.lastMoveScore = null;
-        let lastMove = this.master.game.controller.getLastMove();
+        let lastMove = this.selfmaster.game.controller.getLastMove();
         if (lastMove === undefined)
             return;
         if (this.isInTheory) {
@@ -648,7 +648,7 @@ class StockfishEngine {
             };
             let hlColor = highlightColors[this.lastMoveScore];
             if (hlColor != null) {
-                this.master.game.controller.markings.addOne({
+                this.selfmaster.game.controller.markings.addOne({
                     data: {
                         opacity: 0.5,
                         color: hlColor,
@@ -659,8 +659,8 @@ class StockfishEngine {
                     type: "highlight",
                 });
             }
-            // this.master.game.controller.markings.removeOne(`effect|${lastMove.to}`);
-            this.master.game.controller.markings.addOne({
+            // this.selfmaster.game.controller.markings.removeOne(`effect|${lastMove.to}`);
+            this.selfmaster.game.controller.markings.addOne({
                 data: {
                     square: lastMove.to,
                     type: this.lastMoveScore,
@@ -695,7 +695,7 @@ class StockfishEngine {
                 }
             }
         }
-        if (this.master.options.text_to_speech) {
+        if (this.selfmaster.options.text_to_speech) {
             const topMove = this.topMoves[0]; // Select the top move from the PV list
             const msg = new SpeechSynthesisUtterance(topMove.move); // Use topMove.move for the spoken text
             const voices = window.speechSynthesis.getVoices();
@@ -713,13 +713,13 @@ class StockfishEngine {
             // If a best move has been selected, consider all moves in topMoves
             top_pv_moves = this.topMoves.slice(0, this.options["MultiPV"]);
             // sort by rank in multipv
-            this.master.game.HintMoves(top_pv_moves, this.lastTopMoves, isBestMove);
+            this.selfmaster.game.HintMoves(top_pv_moves, this.lastTopMoves, isBestMove);
 
-            if (this.master.options.move_analysis) {
+            if (this.selfmaster.options.move_analysis) {
                 this.AnalyzeLastMove();
             } 
         } else { // if da best move aint been selected yet
-            if (this.master.options.legit_auto_move) { // legit move stuff, ignore
+            if (this.selfmaster.options.legit_auto_move) { // legit move stuff, ignore
                 const movesWithAccuracy = this.topMoves.filter(move => move.accuracy !== undefined);
 
                 if (movesWithAccuracy.length > 0) {
@@ -757,7 +757,7 @@ class StockfishEngine {
 
                 }
             } // end ignore
-            if (this.master.options.legit_auto_move) { // random crap with auto move
+            if (this.selfmaster.options.legit_auto_move) { // random crap with auto move
                 const randomMoveIndex = Math.floor(Math.random() * top_pv_moves.length);
                 const randomMove = top_pv_moves[randomMoveIndex];
                 top_pv_moves = [randomMove, ...top_pv_moves.filter(move => move !== randomMove)]; // Move the random move to the front of the PV moves
@@ -766,23 +766,23 @@ class StockfishEngine {
             }
         }
 
-        const bestMoveChance = this.master.options.best_move_chance;
-        if (Math.random() * 100 < bestMoveChance && this.master.options.legit_auto_move) {
+        const bestMoveChance = this.selfmaster.options.best_move_chance;
+        if (Math.random() * 100 < bestMoveChance && this.selfmaster.options.legit_auto_move) {
             top_pv_moves = [top_pv_moves[0]]; // Only consider the top move
         } else {
             const randomMoveIndex = Math.floor(Math.random() * top_pv_moves.length);
             const randomMove = top_pv_moves[randomMoveIndex];
             top_pv_moves = [randomMove, ...top_pv_moves.filter(move => move !== randomMove)]; // Move the random move to the front of the PV moves
         }
-        if (bestMoveSelected && this.master.options.legit_auto_move && this.master.game.controller.getPlayingAs() === this.master.game.controller.getTurn()) {
+        if (bestMoveSelected && this.selfmaster.options.legit_auto_move && this.selfmaster.game.controller.getPlayingAs() === this.selfmaster.game.controller.getTurn()) {
             let bestMove;
-            if (this.master.options.random_best_move) {
+            if (this.selfmaster.options.random_best_move) {
                 const random_best_move_index = Math.floor(Math.random() * top_pv_moves.length);
                 bestMove = top_pv_moves[random_best_move_index];
             } else {
                 bestMove = top_pv_moves[0];
             }
-            const legalMoves = this.master.game.controller.getLegalMoves();
+            const legalMoves = this.selfmaster.game.controller.getLegalMoves();
             const index = legalMoves.findIndex(
                 (move) => move.from === bestMove.from && move.to === bestMove.to);
             console.assert(index !== -1, "Illegal best move");
@@ -791,14 +791,14 @@ class StockfishEngine {
             if (bestMove.promotion !== null) {
                 moveData.promotion = bestMove.promotion;
             }
-            if (this.master.options.highmatechance) {
+            if (this.selfmaster.options.highmatechance) {
                 const sortedMoves = this.topMoves.sort((a, b) => {
                     if (a.mateIn !== null && b.mateIn === null) {
                         return -1;
                     } else if (a.mateIn === null && b.mateIn !== null) {
                         return 1;
                     } else if (a.mateIn !== null && b.mateIn !== null) {
-                        if (a.mateIn <= this.master.options.matefindervalue && b.mateIn <= this.master.options.matefindervalue) {
+                        if (a.mateIn <= this.selfmaster.options.matefindervalue && b.mateIn <= this.selfmaster.options.matefindervalue) {
                             return a.mateIn - b.mateIn;
                         } else {
                             return 0;
@@ -814,7 +814,7 @@ class StockfishEngine {
                     top_pv_moves = [fastestMateMove];
                 }
             }
-            let auto_move_time = this.master.options.auto_move_time + (Math.floor(Math.random() * this.master.options.auto_move_time_random) % this.master.options.auto_move_time_random_div) * this.master.options.auto_move_time_random_multi;
+            let auto_move_time = this.selfmaster.options.auto_move_time + (Math.floor(Math.random() * this.selfmaster.options.auto_move_time_random) % this.selfmaster.options.auto_move_time_random_div) * this.selfmaster.options.auto_move_time_random_multi;
             if (isNaN(auto_move_time) || auto_move_time === null || auto_move_time === undefined) {
                 auto_move_time = 100;
             }
@@ -836,7 +836,7 @@ class StockfishEngine {
                 });
             }
             setTimeout(() => {
-                this.master.game.controller.move(moveData);
+                this.selfmaster.game.controller.move(moveData);
             }, auto_move_time);
         }
     }
@@ -942,16 +942,16 @@ function InitBetterMint(chessboard) {
     fetch(Config.pathToEcoJson).then(function (response) {
         return __awaiter(this, void 0, void 0, function* () {
             let table = yield response.json();
-            ecoTable = new Map(table.map((data) => [data.f, true]));
+            eTable = new Map(table.map((data) => [data.f, true]));
         });
     });
     // get the extension options
     ChromeRequest.getData().then(function (options) {
             try {
-                master = new BetterMint(chessboard, options);
+                selfmaster = new BetterMint(chessboard, options);
             } catch (e) {
                 // console.error(e); hehe no error today
-                console.error('oh noes master didnt load')
+                console.error('oh noes selfmaster didnt load')
             }
         });
 }
@@ -982,8 +982,8 @@ customElements.whenDefined("chess-board").then(function (ctor) {
 window.onload = function () {
     var url = window.location.href;
     if (url.includes('com/play/') || url.includes('com/game/') || url.includes('com/puzzles/')) { // checks if you're possibly in a game
-        if (master != undefined || master != null) { // checks if game is runnin
-            master
+        if (selfmaster != undefined || selfmaster != null) { // checks if game is runnin
+            selfmaster
                 .game
                 .CreateAnalysisTools(); // create eval stuff because not gay
         }

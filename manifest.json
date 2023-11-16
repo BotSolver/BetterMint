@@ -7,7 +7,7 @@
         "48": "img/logo-48.png",
         "128": "img/logo-128.png"
     },
-    "version": "1.9.82",
+    "version": "1.9.83",
     "description": "BetterMint is a tool that helps you get better at chess.",
     "permissions": [
         "storage",
