@@ -840,38 +840,39 @@ class StockfishEngine {
             }, auto_move_time);
         }
     }
+
+    // The following code was updated and fixed by https://github.com/hotamago
     SortTopMoves() {
         // sort the top move list to bring the best moves on top (index 0)
         this.topMoves.sort(function (a, b) {
-            if (b.mate === null) {
-                // this move is mate and the other is not
-                if (a.mate !== null) {
-                    // a negative mate value is a losing move
-                    return a.mate < 0 ? 1 : -1
-                }
-                // both moves has no mate, compare the depth first than centipawn
-                if (a.depth === b.depth) {
-                    if (a.cp === b.cp)
-                        return 0;
-                    return a.cp > b.cp ? -1 : 1;
-                }
-                return a.depth > b.depth ? -1 : 1;
-            }
-            else {
-                // both this move and other move is mate
-                if (a.mate !== null) {
-                    // both losing move, which takes more moves is better
-                    // both winning move, which takes less move is better
-                    if ((a.mate < 0 && b.mate < 0) ||
-                        (a.mate > 0 && b.mate > 0)) {
-                        return a.mate < b.mate ? 1 : -1;
-                    }
-                    // comparing a losing move with a winning move, positive mate score is winning
-                    return a.mate > b.mate ? -1 : 1;
-                }
-                return b.mate < 0 ? 1 : -1;
-            }
-        });
+			if(a.mate !== null && b.mate === null){
+				return a.mate < 0 ? 1 : -1
+			}
+			if(a.mate === null && b.mate !== null){
+				return b.mate > 0 ? 1 : -1
+			}
+			// both moves has no mate, compare the depth first than centipawn
+			if(a.mate === null && b.mate === null){
+				if (a.depth === b.depth) {
+					if (a.cp === b.cp)
+						return 0;
+					return a.cp > b.cp ? -1 : 1;
+				}
+				return a.depth > b.depth ? -1 : 1;
+			}
+			// If both are check mate
+			
+			if(a.mate < 0 && b.mate < 0){
+				if(a.line.length === b.line.length) return 0;
+				return a.line.length < b.line.length ? 1 : -1;
+			}
+			if(a.mate > 0 && b.mate > 0){
+				if(a.line.length === b.line.length) return 0;
+				return a.line.length > b.line.length ? 1 : -1;
+			}
+			
+			return a.mate < b.mate ? 1 : -1;
+		});
     }
 }
 class BetterMint {
