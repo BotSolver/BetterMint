@@ -1,4 +1,5 @@
 "use strict";
+
 var __awaiter = (this && this.__awaiter) || function (
     thisArg,
     _arguments,
@@ -35,6 +36,7 @@ var __awaiter = (this && this.__awaiter) || function (
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 var selfmaster;
 var Config = undefined;
 var context = undefined;

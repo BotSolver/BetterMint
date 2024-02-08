@@ -7,25 +7,24 @@
         "48": "img/logo-48.png",
         "128": "img/logo-128.png"
     },
-    "version": "1.9.83",
+    "version": "1.9.85",
     "description": "BetterMint is a tool that helps you get better at chess.",
     "permissions": [
         "storage",
         "declarativeNetRequest"
     ],
     "host_permissions": [
-        "http://*.chess.com/*",
-        "https://*.chess.com/*"
+        "<all_urls>"
     ],
     "content_scripts": [{
-        "js": ["js/loader.js"],
+	"js": ["js/loader.js", "js/muni.js"],
         "css": [
             "css/depthbar.css",
             "css/evalbar.css",
             "css/material-icon.css"
         ],
         "matches": [
-            "https://*.chess.com/*"
+            "<all_urls>"
         ],
         "run_at": "document_start"
     }],
@@ -45,7 +44,7 @@
             "html/options.html"
         ],
         "matches": [
-            "https://*.chess.com/*"
+            "<all_urls>"
         ]
     }]
 }
