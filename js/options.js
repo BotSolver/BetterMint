@@ -10,9 +10,16 @@ var inputAutoMoveTimeRandom;
 var inputAutoMoveTimeRandomDiv;
 var inputAutoMoveTimeRandomMulti;
 var inputBestMoveChance;
+var inputStockfish11;
+var inputContempt;
+var inputChess960;
+var inputSkillLevelProb;
+var inputSkillLevelError;
 var inputLegitAutoMove;
 var inputMateFinderValue;
 var inputHighMateChance;
+var inputAggressiveMode;
+var inputDefensiveMode;
 var inputRandomBestMove;
 var inputMaxLegitAutoMoveDepth;
 var inputShowHints;
@@ -21,9 +28,13 @@ var inputDepthBar;
 var inputTextToSpeech;
 var inputEvalBar;
 var inputUseNNUE;
+
 const DefaultExtensionOptions = {
     depth: 3,
     elo: 1500,
+    contempt: 24,
+    skill_level_prob: 128,
+    skill_level_error: 200,
     skill_level: 10,
     multipv: 3,
     threads: 10,
@@ -33,8 +44,12 @@ const DefaultExtensionOptions = {
     auto_move_time_random_multi: 1000,
     max_legit_auto_move_depth: 5,
     matefindervalue: 5,
+    stockfish11: false,
+    chess960: false,
     highmatechance: false,
     limit_strength: false,
+    aggressive_mode: false,
+    defensive_mode: false,
     random_best_move: false,
     legit_auto_move: false,
     show_hints: true,
@@ -61,6 +76,12 @@ function RestoreOptions() {
             event.disableUpdate = true;
             inputElo.dispatchEvent(event);
         }
+        if (inputContempt !== null && inputContempt.value !== undefined) {
+            inputContempt.value = options.contempt.toString();
+            let event = new CustomEvent("input");
+            event.disableUpdate = true;
+            inputContempt.dispatchEvent(event);
+        }
         if (inputBestMoveChance !== null && inputBestMoveChance.value !== undefined) {
             inputBestMoveChance.value = options.best_move_chance.toString(); // gets the value as a string, valid but not apparently option is undefined
             let event = new CustomEvent("input");
@@ -78,6 +99,18 @@ function RestoreOptions() {
             let event = new CustomEvent("input");
             event.disableUpdate = true;
             inputSkillLevel.dispatchEvent(event);
+        }
+        if (inputSkillLevelError !== null && inputSkillLevelError.value !== undefined) {
+            inputSkillLevelError.value = options.skill_level_error.toString();
+            let event = new CustomEvent("input");
+            event.disableUpdate = true;
+            inputSkillLevelError.dispatchEvent(event);
+        }
+        if (inputSkillLevelProb !== null && inputSkillLevelProb.value !== undefined) {
+            inputSkillLevelProb.value = options.skill_level_prob.toString();
+            let event = new CustomEvent("input");
+            event.disableUpdate = true;
+            inputSkillLevelProb.dispatchEvent(event);
         }
         if (inputAutoMoveTime !== null && inputAutoMoveTime.value !== undefined) {
             inputAutoMoveTime.value = options.auto_move_time.toString();
@@ -118,11 +151,23 @@ function RestoreOptions() {
         if (inputShowHints !== null && inputShowHints.checked !== undefined) {
             inputShowHints.checked = options.show_hints;
         }
+        if (inputChess960 !== null && inputChess960.checked !== undefined) {
+            inputChess960.checked = options.chess960;
+        }
+        if (inputStockfish11 !== null && inputStockfish11.checked !== undefined) {
+            inputStockfish11.checked = options.stockfish11;
+        }
         if (inputHighMateChance !== null && inputHighMateChance.checked !== undefined) {
             inputHighMateChance.checked = options.highmatechance;
         }
         if (inputLimitStrength !== null && inputLimitStrength.checked !== undefined) {
             inputLimitStrength.checked = options.limit_strength;
+        }
+        if (inputAggressiveMode !== null && inputAggressiveMode.checked !== undefined) {
+            inputAggressiveMode.checked = options.aggressive_mode;
+        }
+        if (inputDefensiveMode !== null && inputDefensiveMode.checked !== undefined) {
+            inputDefensiveMode.checked = options.defensive_mode;
         }
         if (inputLegitAutoMove !== null && inputLegitAutoMove.checked !== undefined) {
             inputLegitAutoMove.checked = options.legit_auto_move;
@@ -152,7 +197,10 @@ function OnOptionsChange() {
     let options = {
         depth: parseInt(inputDepth.value),
         elo: parseInt(inputElo.value),
+        contempt: parseInt(inputContempt.value),
         skill_level: parseInt(inputSkillLevel.value),
+        skill_level_prob: parseInt(inputSkillLevelProb.value),
+        skill_level_error: parseInt(inputSkillLevelError.value),
         multipv: parseInt(inputMultiPV.value),
         best_move_chance: parseInt(inputBestMoveChance.value), // input's value, valid.
         threads: 10,
@@ -163,7 +211,11 @@ function OnOptionsChange() {
         auto_move_time_random_multi: parseInt(inputAutoMoveTimeRandomMulti.value),
         max_legit_auto_move_depth: parseInt(inputMaxLegitAutoMoveDepth.value),
         show_hints: inputShowHints.checked,
+        stockfish11: inputStockfish11.checked,
+        chess960: inputChess960.checked,
         highmatechance: inputHighMateChance.checked,
+        defensive_mode: inputDefensiveMode.checked,
+        aggressive_mode: inputAggressiveMode.checked,
         limit_strength: inputLimitStrength.checked,
         legit_auto_move: inputLegitAutoMove.checked,
         random_best_move: inputRandomBestMove.checked,
@@ -193,6 +245,10 @@ function InitOptions() {
     inputBestMoveChance = document.getElementById('option-best-move-chance'); // assign it as the element valid
     inputHighMateChance = document.getElementById("option-highmatechance");
     inputSkillLevel = document.getElementById("option-skill-level");
+    inputContempt = document.getElementById("option-contempt");
+    inputSkillLevelError = document.getElementById("option-skill-level-error");
+    inputSkillLevelProb = document.getElementById("option-skill-level-prob");
+    inputChess960 = document.getElementById("option-chess960");
     inputLimitStrength = document.getElementById("option-limit-strength");
     inputAutoMoveTime = document.getElementById("option-auto-move-time");
     inputAutoMoveTimeRandom = document.getElementById("option-auto-move-time-random");
@@ -201,7 +257,10 @@ function InitOptions() {
     inputMaxLegitAutoMoveDepth = document.getElementById("option-max-legit-auto-move-depth");
     inputLegitAutoMove = document.getElementById("option-legit-auto-move");
     inputRandomBestMove = document.getElementById("option-random-best-move");
+    inputAggressiveMode = document.getElementById("option-aggressive-mode");
+    inputDefensiveMode = document.getElementById("option-defensive-mode");
     inputShowHints = document.getElementById("option-show-hints");
+    inputStockfish11 = document.getElementById("option-stockfish11");
     inputTextToSpeech = document.getElementById("option-text-to-speech");
     inputMoveAnalysis = document.getElementById("option-move-analysis");
     inputDepthBar = document.getElementById("option-depth-bar");
@@ -320,7 +379,10 @@ window.onload = function () {
             elo: parseInt(document.getElementById('option-elo').value),
             matefindervalue: parseInt(document.getElementById('option-mate-finder-value').value),
             multipv: parseInt(document.getElementById('option-multipv').value),
+            contempt: parseInt(document.getElementById('option-contempt').value),
             skill_level: parseInt(document.getElementById('option-skill-level').value),
+            skill_level_prob: parseInt(document.getElementById('option-skill-level-prob').value),
+            skill_level_error: parseInt(document.getElementById('option-skill-level-error').value),
             best_move_chance: parseInt(document.getElementById('option-best-move-chance').value),
             threads: 10,
             auto_move_time: parseInt(document.getElementById('option-auto-move-time').value),
@@ -331,8 +393,12 @@ window.onload = function () {
             random_best_move: document.getElementById('option-random-best-move').checked,
             highmatechance: document.getElementById('option-highmatechance').checked,
             limit_strength: document.getElementById('option-limit-strength').checked,
+            chess960: document.getElementById('option-chess960').checked,
+            aggressive_mode: document.getElementById('option-aggressive-mode').checked,
+            defensive_mode: document.getElementById('option-defensive-mode').checked,
             legit_auto_move: document.getElementById('option-legit-auto-move').checked,
             show_hints: document.getElementById('option-show-hints').checked,
+            stockfish11: document.getElementById('option-stockfish11').checked,
             text_to_speech: document.getElementById('option-text-to-speech').checked,
             move_analysis: document.getElementById('option-move-analysis').checked,
             depth_bar: document.getElementById('option-depth-bar').checked,
@@ -362,13 +428,20 @@ window.onload = function () {
             document.getElementById('option-best-move-chance').value = options.best_move_chance;
             document.getElementById('option-mate-finder-value').value = options.matefindervalue;
             document.getElementById('option-multipv').value = options.multipv;
+            document.getElementById('option-contempt').value = options.contempt;
             document.getElementById('option-skill-level').value = options.skill_level;
+            document.getElementById('option-skill-level-prob').value = options.skill_level_prob;
+            document.getElementById('option-skill-level-error').value = options.skill_level_error;
+            document.getElementById('option-chess960').value = options.chess960;
             document.getElementById('option-limit-strength').value = options.limit_strength;
             document.getElementById('option-show-hints').checked = options.show_hints;
+            document.getElementById('option-stockfish11').checked = options.stockfish11;
             document.getElementById('option-move-analysis').checked = options.move_analysis;
             document.getElementById('option-depth-bar').checked = options.depth_bar;
             document.getElementById('option-evaluation-bar').checked = options.evaluation_bar;
             document.getElementById('option-use-nnue').checked = options.use_nnue;
+            document.getElementById('option-aggressive-mode').checked = options.aggressive_mode;
+            document.getElementById('option-defensive-mode').checked = options.defensive_mode;
             document.getElementById('option-highmatechance').checked = options.highmatechance;
             document.getElementById('option-auto-move-time').value = options.auto_move_time;
             document.getElementById('option-auto-move-time-random').value = options.auto_move_time_random;

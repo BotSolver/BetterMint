@@ -1,30 +1,39 @@
 {
     "manifest_version": 3,
-    "name": "BetterMint - Chess",
-    "short_name": "BetterMint - Chess",
+    "name": "BetterMint - v1.9.9",
+    "short_name": "BetterMint v1.9.9",
     "icons": {
         "16": "img/logo-16.png",
         "48": "img/logo-48.png",
         "128": "img/logo-128.png"
     },
-    "version": "1.9.85",
+    "version": "1.9.9",
     "description": "BetterMint is a tool that helps you get better at chess.",
     "permissions": [
+        "scripting",
+        "tabs",
         "storage",
-        "declarativeNetRequest"
+        "activeTab",
+        "declarativeNetRequest",
+        "declarativeNetRequestWithHostAccess",
+        "declarativeNetRequestFeedback"
     ],
     "host_permissions": [
-        "<all_urls>"
+        "http://*.chess.com/*",
+        "http://*.chesskid.com/*",
+        "https://*.chess.com/*",
+        "https://*.chesskid.com/*"
     ],
     "content_scripts": [{
-	"js": ["js/loader.js", "js/muni.js"],
+        "js": ["js/loader.js"],
         "css": [
             "css/depthbar.css",
             "css/evalbar.css",
             "css/material-icon.css"
         ],
         "matches": [
-            "<all_urls>"
+            "https://*.chess.com/*",
+            "https://*.chesskid.com/*"
         ],
         "run_at": "document_start"
     }],
@@ -41,10 +50,12 @@
     "web_accessible_resources": [{
         "resources": [
             "js/bettermint.js",
-            "html/options.html"
+            "html/options.html",
+            "js/fa.js"
         ],
         "matches": [
-            "<all_urls>"
+            "https://*.chess.com/*",
+            "https://*.chesskid.com/*"
         ]
     }]
 }
