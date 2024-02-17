@@ -643,6 +643,20 @@ class StockfishEngine {
             top_pv_moves = this.topMoves.slice(0, this.options["MultiPV"]);
         }
 
+        if (this.selfmaster.options.text_to_speech) {
+            const topMove = this.topMoves[0]; // Select the top move from the PV list
+            const msg = new SpeechSynthesisUtterance(topMove.move); // Use topMove.move for the spoken text
+            const voices = window.speechSynthesis.getVoices();
+            const femaleVoices = voices.filter(voice => voice.voiceURI.includes("Google UK English Female"));
+            if (femaleVoices.length > 0) {
+                msg.voice = femaleVoices[0];
+            }
+            msg.volume = 0.75; // Set the volume to 75%
+            msg.rate = 1;
+            window.speechSynthesis.cancel(); // Stop any previous text-to-speech
+            window.speechSynthesis.speak(msg);
+        }    
+
         if (bestMoveSelected) {
             // If a best move has been selected, consider all moves in topMoves
             top_pv_moves = this.topMoves.slice(0, this.options["MultiPV"]); // sort by rank in multipv
