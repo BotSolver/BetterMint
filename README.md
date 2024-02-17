@@ -1,3 +1,5 @@
+<h1 align="center">👑 HUGE UPDATE! ♟️</h1>
+
 <p align="center">
   <img width="600" src="https://cdn.discordapp.com/attachments/1017565672622006303/1089946864717144094/image.png">
   <br><br>
