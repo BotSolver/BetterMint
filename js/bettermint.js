@@ -608,41 +608,6 @@ class StockfishEngine {
             }
         }
     
-        // Create an array of theory moves
-        const theoryMoves = top_pv_moves.filter(move => eTable.get(move.move) === true);
-    
-        if (theoryMoves.length > 0) {
-            console.log("Found moves in theory:");
-            theoryMoves.forEach(theoryMove => {
-                console.log(theoryMove.move);
-            });
-    
-            // Sort theory moves using the provided sorting logic
-            theoryMoves.sort((a, b) => {
-                if (a.mate !== null && b.mate !== null) {
-                    return a.mate - b.mate;
-                } else if (a.mate !== null) {
-                    return -1;
-                } else if (b.mate !== null) {
-                    return 1;
-                } else if (a.cp !== b.cp) {
-                    return a.cp > b.cp ? -1 : 1;
-                } else if (a.depth !== b.depth) {
-                    return a.depth > b.depth ? -1 : 1;
-                } else {
-                    // Keep the original order if all criteria are equal
-                    return 0;
-                }
-            });            
-    
-            // Append non-theory moves to the sorted theory moves
-            const nonTheoryMoves = top_pv_moves.filter(move => !theoryMoves.includes(move));
-            top_pv_moves = [...theoryMoves, ...nonTheoryMoves];
-        } else if (!bestMoveSelected) {
-            // No theory moves found and no best move selected, keep the original top moves
-            top_pv_moves = this.topMoves.slice(0, this.options["MultiPV"]);
-        }
-
         if (this.selfmaster.options.text_to_speech) {
             const topMove = this.topMoves[0]; // Select the top move from the PV list
             const msg = new SpeechSynthesisUtterance(topMove.move); // Use topMove.move for the spoken text
@@ -655,7 +620,7 @@ class StockfishEngine {
             msg.rate = 1;
             window.speechSynthesis.cancel(); // Stop any previous text-to-speech
             window.speechSynthesis.speak(msg);
-        }    
+        } 
 
         if (bestMoveSelected) {
             // If a best move has been selected, consider all moves in topMoves
