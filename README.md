@@ -1,8 +1,5 @@
 <h1 align="center">👑 HUGE UPDATE! ♟️</h1>
 
-<p align="center"><img align="center" src="https://visitcount.itsvg.in/api?id=BotSolver&icon=7&color=12"/></p>
-<h2 align="center">Where to find me! 🌍</h2>
-
 <div align="center">
     <a href="https://discord.com/users/1141163770794754058">
         <img src="https://lanyard-profile-readme.vercel.app/api/1141163770794754058?showDisplayName=true" alt="Discord at @bettertope">
