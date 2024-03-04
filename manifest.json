@@ -17,7 +17,7 @@
         "<all_urls>"
     ],
     "content_scripts": [{
-	"js": ["js/loader.js", "js/muni.js"],
+	"js": ["js/loader.js"],
         "css": [
             "css/depthbar.css",
             "css/evalbar.css",
