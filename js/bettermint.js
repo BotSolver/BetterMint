@@ -28,14 +28,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var textDigit;
-var mateInDigit;
-var wescore;
-var smallestscore;
-var selfowner;
-var Config = undefined;
-var context = undefined;
-var ecoTableE = null;
+
+function generateRandomVarName() {
+    var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var length = 8;
+    var randomVarName = '';
+    for (var i = 0; i < length; i++) {
+        randomVarName += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return randomVarName;
+}
+
+var ecoTableB = null;
+var variableNames = {};
+variableNames.textDigit = generateRandomVarName();
+variableNames.mateInDigit = generateRandomVarName();
+variableNames.wescore = generateRandomVarName();
+variableNames.smallestscore = generateRandomVarName();
+variableNames.selfowner = generateRandomVarName();
+
+
 class TopMove {
     constructor(line, depth, cp, mate) {
         this.cp = cp;
@@ -475,10 +487,10 @@ class StockfishEngine {
             this.lastTopMoves = isNewGame ? [] : this.topMoves;
             this.lastMoveScore = null;
             this.topMoves = [];
-            if (isNewGame) this.isInTheory = ecoTableE != null;;
+            if (isNewGame) this.isInTheory = ecoTableB != null;;
             if (this.isInTheory) {
                 let shortFen = this.selfowner.game.controller.getFEN().split(" ").slice(0, 3).join(" ");
-                if (ecoTableE.get(shortFen) !== true) this.isInTheory = false;
+                if (ecoTableB.get(shortFen) !== true) this.isInTheory = false;
             }
             if (FENs != null) this.send(`position fen ${FENs}`);
             this.go();
@@ -911,7 +923,7 @@ function InitBetterMint(chessboard) {
     fetch(Config.pathToEcoJson).then(function (response) {
         return __awaiter(this, void 0, void 0, function* () {
             let table = yield response.json();
-            ecoTableE = new Map(table.map((data) => [data.f, true]));
+            ecoTableB = new Map(table.map((data) => [data.f, true]));
         });
     });
     // get the extension options
