@@ -116,3 +116,4 @@
 </p>
 
 <p align="center">Remember, BetterMint is a tool to enhance your learning, not a shortcut to mastery. Embrace the magic of chess through practice and dedication!</p>
+hi from webcubed
