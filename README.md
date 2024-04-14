@@ -48,7 +48,7 @@
 
 <p align="center">Before we embark on this magical journey, a reminder: I'm not claiming to be the original wizard behind this extension. The first developer was thedemons (<a href="https://github.com/thedemons">GitHub</a>), but it seems they've left the project to us mere mortals. While I work on updates, let's remember and honor the original wizard!</p>
 
-<h1 align="center">🔮 Features</h1>
+<h1 align="center">🔮 Features (doesn't currently say all features)</h1>
 
 <p align="center">Behold the magical powers of BetterMint:</p>
 
