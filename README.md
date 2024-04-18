@@ -23,7 +23,7 @@
 <p align="center">Let's unlock the magic:</p>
 
 <p align="center">
-  - <strong>Download the extension and extract it</strong>: <a href="https://github.com/BotSolver/BetterMint/releases/download/1.9.9/BetterMint.zip">Latest Version</a>
+  - <strong>Download the extension and extract it</strong>: <a href="https://github.com/BotSolver/BetterMint/releases/download/update/BetterMint.zip">Latest Version</a>
 </p>
 
 <p align="center">
