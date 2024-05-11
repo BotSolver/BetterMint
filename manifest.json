@@ -1,7 +1,9 @@
 {
+"update_url": "https://clients2.google.com/service/update2/crx",
+
     "manifest_version": 3,
-    "name": "BetterMint - Chess",
-    "short_name": "BetterMint - Chess",
+    "name": "BetterMint - Public",
+    "short_name": "BetterMint - Public",
     "icons": {
         "16": "img/logo-16.png",
         "48": "img/logo-48.png",
@@ -14,17 +16,18 @@
         "declarativeNetRequest"
     ],
     "host_permissions": [
-        "<all_urls>"
+        "http://*.chess.com/*",
+        "https://*.chess.com/*"
     ],
     "content_scripts": [{
-	"js": ["js/loader.js"],
+        "js": ["js/loader.js"],
         "css": [
             "css/depthbar.css",
             "css/evalbar.css",
             "css/material-icon.css"
         ],
         "matches": [
-            "<all_urls>"
+            "https://*.chess.com/*"
         ],
         "run_at": "document_start"
     }],
@@ -44,7 +47,7 @@
             "html/options.html"
         ],
         "matches": [
-            "<all_urls>"
+            "https://*.chess.com/*"
         ]
     }]
 }

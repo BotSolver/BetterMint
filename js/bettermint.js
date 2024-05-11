@@ -1,1277 +1,1100 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) {
-        return value instanceof P ? value : new P(function (resolve) {
-            resolve(value);
-        });
+'use strict';
+
+var a = this && this.__awaiter || function (a, b, c, d) {
+  function e(a) {
+    if (a instanceof c) {
+      return a;
+    } else {
+      return new c(function (b) {
+        b(a);
+      });
     }
-    return new(P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) {
-            try {
-                step(generator.next(value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-
-        function rejected(value) {
-            try {
-                step(generator["throw"](value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-
-        function step(result) {
-            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-        }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
+  }
+  return new (c ||= Promise)(function (c, f) {
+    function g(a) {
+      try {
+        i(d.next(a));
+      } catch (a) {
+        f(a);
+      }
+    }
+    function h(a) {
+      try {
+        i(d.throw(a));
+      } catch (a) {
+        f(a);
+      }
+    }
+    function i(a) {
+      if (a.done) {
+        c(a.value);
+      } else {
+        e(a.value).then(g, h);
+      }
+    }
+    i((d = d.apply(a, b || [])).next());
+  });
 };
-
-function generateRandomVarName() {
-    var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    var length = 8;
-    var randomVarName = '';
-    for (var i = 0; i < length; i++) {
-        randomVarName += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return randomVarName;
+function b() {
+  var a = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  var b = 8;
+  var c = "";
+  for (var d = 0; d < b; d++) {
+    c += a.charAt(Math.floor(Math.random() * a.length));
+  }
+  return c;
 }
-
-var ecoTableB = null;
-var variableNames = {};
-variableNames.textDigit = generateRandomVarName();
-variableNames.mateInDigit = generateRandomVarName();
-variableNames.wescore = generateRandomVarName();
-variableNames.smallestscore = generateRandomVarName();
-variableNames.selfowner = generateRandomVarName();
-
-
-class TopMove {
-    constructor(line, depth, cp, mate) {
-        this.cp = cp;
-        this.line = line.split(" ");
-        this.move = this.line[0];
-        this.promotion = this.move.length > 4 ? this.move.substring(4, 5) : null;
-        this.from = this.move.substring(0, 2);
-        this.to = this.move.substring(2, 4);
-        this.mate = mate;
-        this.depth = depth;
-    }
+var c = null;
+var d = {};
+d.textDigit = b();
+d.mateInDigit = b();
+d.wescore = b();
+d.smallestscore = b();
+d.selfowner = b();
+class e {
+  constructor(a, b, c, d) {
+    this.line = a.split(" ");
+    this.move = this.line[0];
+    this.promotion = this.move.length > 4 ? this.move.substring(4, 5) : null;
+    this.from = this.move.substring(0, 2);
+    this.to = this.move.substring(2, 4);
+    this.cp = c;
+    this.mate = d;
+    this.depth = b;
+  }
 }
-class GameController {
-    constructor(selfowner, chessboard) {
-        this.selfowner = selfowner;
-        this.chessboard = chessboard;
-        this.controller = chessboard.game;
-        this.options = this.controller.getOptions();
-        this.depthBar = null;
-        this.evalBar = null;
-        this.evalBarFill = null;
-        this.evalScore = null;
-        this.evalScoreAbbreviated = null;
-        this.currentMarkings = [];
-        let self = this;
-        this.controller.on('Move', (event) => {
-            console.log("On Move", event.data);
-            this.UpdateEngine(false);
-        });
-        // check if a new game has started
-        this.controller.on('ModeChanged', (event) => {
-            if (event.data === "playing") {
-                // at this point, the fen notation isn't updated yet, we should delay this
-                setTimeout(() => {
-                    this.ResetGame();
-                }, 100)
-            }
-        });
-        this.controller.on('UpdateOptions', (event) => {
-            this.options = this.controller.getOptions();
-            if (event.data.flipped != undefined && this.evalBar != null) {
-                if (event.data.flipped) this.evalBar.classList.add("evaluation-bar-flipped");
-                else this.evalBar.classList.remove("evaluation-bar-flipped");
-            }
-        });
-        this.CreateAnalysisTools();
-        setTimeout(() => { this.ResetGame(); }, 100);
-    }
-    UpdateExtensionOptions() {
-        let options = this.selfowner.options;
-        if (options.evaluation_bar && this.evalBar == null) this.CreateAnalysisTools();
-        else if (!options.evaluation_bar && this.evalBar != null) {
-            this.evalBar.remove();
-            this.evalBar = null;
-        }
-        if (options.depth_bar && this.depthBar == null) this.CreateAnalysisTools();
-        else if (!options.depth_bar && this.depthBar != null) {
-            this.depthBar.parentElement.remove();
-            this.depthBar = null;
-        }
-        if (!options.show_hints) {
-            this.RemoveCurrentMarkings();
-        }
-        if (!options.move_analysis) {
-            let lastMove = this.controller.getLastMove();
-            if (lastMove) {
-                this.controller.markings.removeOne(`effect|${lastMove.to}`);
-            }
-        }
-    }
-    CreateAnalysisTools() {
-        // we must wait for a little bit because at this point the chessboard has not
-        // been added to chessboard layout (#board-layout-main)
-        let interval1 = setInterval(() => {
-            let layoutChessboard = this.chessboard.parentElement;
-            if (layoutChessboard == null) return;
-            let layoutMain = layoutChessboard.parentElement;
-            if (layoutMain == null) return;
-            clearInterval(interval1);
-            if (this.selfowner.options.depth_bar && this.depthBar == null) {
-                // create depth bar
-                let depthBar = document.createElement("div");
-                depthBar.classList.add("depthBarLayout");
-                depthBar.innerHTML = `<div class="depthBar"><span class="depthBarProgress"></span></div>`;
-                layoutMain.insertBefore(depthBar, layoutChessboard.nextSibling);
-                this.depthBar = depthBar.querySelector(".depthBarProgress");
-            }
-            if (this.selfowner.options.evaluation_bar && this.evalBar == null) {
-                // create eval bar
-                let evalBar = document.createElement("div");
-                evalBar.style.flex = "1 1 auto;";
-                evalBar.innerHTML = `
-                <div class="evaluation-bar-bar">
-                    <span class="evaluation-bar-scoreAbbreviated evaluation-bar-dark">0.0</span>
-                    <span class="evaluation-bar-score evaluation-bar-dark ">+0.00</span>
-                    <div class="evaluation-bar-fill">
-                    <div class="evaluation-bar-color evaluation-bar-black"></div>
-                    <div class="evaluation-bar-color evaluation-bar-draw"></div>
-                    <div class="evaluation-bar-color evaluation-bar-white" style="transform: translate3d(0px, 50%, 0px);"></div>
-                    </div>
-                </div>`;
-                let layoutEvaluation = layoutChessboard.querySelector("#board-layout-evaluation");
-                if (layoutEvaluation == null) {
-                    layoutEvaluation = document.createElement("div");
-                    layoutEvaluation.classList.add("board-layout-evaluation");
-                    layoutChessboard.insertBefore(layoutEvaluation, layoutChessboard.firstElementChild);
-                }
-                layoutEvaluation.innerHTML = "";
-                layoutEvaluation.appendChild(evalBar);
-                this.evalBar = layoutEvaluation.querySelector(".evaluation-bar-bar");
-                this.evalBarFill = layoutEvaluation.querySelector(".evaluation-bar-white");
-                this.evalScore = layoutEvaluation.querySelector(".evaluation-bar-score");
-                this.evalScoreAbbreviated = layoutEvaluation.querySelector(".evaluation-bar-scoreAbbreviated");
-                if (!this.options.isWhiteOnBottom && this.options.flipped) this.evalBar.classList.add("evaluation-bar-flipped");
-            }
-        }, 10);
-    }
-    
-    UpdateEngine(isNewGame) {
-        // console.log("UpdateEngine", isNewGame);
-        let FENs = this.controller.getFEN();
-        this.selfowner.engine.UpdatePosition(FENs, isNewGame);
-        this.SetCurrentDepth(0);
-    }
-    ResetGame() {
-        this.UpdateEngine(true);
-    }
-    
-    RemoveCurrentMarkings() {
-        this.currentMarkings.forEach((marking) => {
-            let key = marking.type + "|";
-            if (marking.data.square != null) key += marking.data.square;
-            else key += `${marking.data.from}${marking.data.to}`;
-            this.controller.markings.removeOne(key);
-        });
-        this.currentMarkings = [];
-    }
-    HintMoves(topMoves, lastTopMoves, isBestMove) {
-        let options = this.selfowner.options;
-        let bestMove = topMoves[0];
-        if (options.show_hints) {
-            this.RemoveCurrentMarkings();
-            topMoves.forEach((move, idx) => {
-                // isBestMove means final evaluation, don't include the moves that have less depth than the best move
-                if (isBestMove && move.depth !== bestMove.depth) return;
-                let color = idx === 0 ? this.options.arrowColors.alt : idx >= 1 && idx <= 2 ? this.options.arrowColors.shift : idx >= 3 && idx <= 5 ? this.options.arrowColors.default : this.options.arrowColors.ctrl;
-                this.currentMarkings.push({
-                    data: {
-                        from: move.from,
-                        color: color,
-                        opacity: 0.8,
-                        to: move.to,
-                    },
-                    node: true,
-                    persistent: true,
-                    type: "arrow",
-                });
-                if (move.mate !== null) {
-                    this.currentMarkings.push({
-                        data: {
-                            square: move.to,
-                            type: move.mate < 0 ? "ResignWhite" : "WinnerWhite",
-                        },
-                        node: true,
-                        persistent: true,
-                        type: "effect",
-                    });
-                }
-            });
-            // reverse the markings to make the best move arrow appear on top
-            this.currentMarkings.reverse();
-            this.controller.markings.addMany(this.currentMarkings);
-        }
-        if (options.depth_bar) {
-            let depthPercent = (isBestMove ? bestMove.depth : bestMove.depth - 1) / this.selfowner.engine.depth * 100;
-            this.SetCurrentDepth(depthPercent);
-        }
-        if (options.evaluation_bar) {
-            let score = (bestMove.mate != null ? bestMove.mate : bestMove.cp);
-            if (this.controller.getTurn() == 2) score *= -1;
-            this.SetEvaluation(score, bestMove.mate != null);
-        }
-    }
-    SetCurrentDepth(percent) {
-        if (this.depthBar == null) return;
-        let style = this.depthBar.style;
-        if (percent <= 0) {
-            this.depthBar.classList.add("disable-transition");
-            style.width = `0%`;
-            this.depthBar.classList.remove("disable-transition");
+class f {
+  constructor(a, b) {
+    this.selfowner = a;
+    this.chessboard = b;
+    this.controller = b.game;
+    this.options = this.controller.getOptions();
+    this.depthBar = null;
+    this.evalBar = null;
+    this.evalBarFill = null;
+    this.evalScore = null;
+    this.evalScoreAbbreviated = null;
+    this.currentMarkings = [];
+    let c = this;
+    this.controller.on("Move", a => {
+      console.log("On Move", a.data);
+      this.UpdateEngine(false);
+    });
+    this.controller.on("ModeChanged", a => {
+      if (a.data === "playing") {
+        setTimeout(() => {
+          this.ResetGame();
+        }, 100);
+      }
+    });
+    this.controller.on("UpdateOptions", a => {
+      this.options = this.controller.getOptions();
+      if (a.data.flipped != undefined && this.evalBar != null) {
+        if (a.data.flipped) {
+          this.evalBar.classList.add("evaluation-bar-flipped");
         } else {
-            if (percent > 100) percent = 100;
-            style.width = `${percent}%`;
+          this.evalBar.classList.remove("evaluation-bar-flipped");
         }
+      }
+    });
+  }
+  UpdateExtensionOptions() {
+    let a = this.selfowner.options;
+    if (a.evaluation_bar && this.evalBar == null) {
+      this.CreateAnalysisTools();
+    } else if (!a.evaluation_bar && this.evalBar != null) {
+      this.evalBar.remove();
+      this.evalBar = null;
     }
-    SetEvaluation(score, isMate) {
-        if (this.evalBar == null) return;
-        var percent, textDigit, textScoreAbb;
-        if (!isMate) {
-            let eval_max = 500;
-            let eval_min = -500;
-            window.smallestscore = score / 100; // convert centipawns to unit in pawns
-            window.wescore = smallestscore.toString();
-            window.mateInDigit = false;
-            if (document.getElementById("movescore") !== null) {
-                if (smallestscore > 0) {
-                    document.getElementById('movescore').style.color = 'lightgreen';
-                    document.getElementById('movescoreprefix').innerHTML = "Evaluation Score: "
-                    document.getElementById('movescore').innerHTML = '+' + wescore;
-                } else if (smallestscore < 0) {
-                    document.getElementById('movescore').style.color = 'red';
-                    document.getElementById('movescoreprefix').innerHTML = "Evaluation Score: "
-                    document.getElementById('movescore').innerHTML = wescore;
-                }
-            }
-            percent = 90 - (((score - eval_min) / (eval_max - eval_min)) * (95 - 5)) + 5;
-            if (percent < 5) percent = 5;
-            else if (percent > 95) percent = 95;
-            textDigit = (score >= 0 ? "+" : "") + smallestscore.toFixed(2);
-            textScoreAbb = Math.abs(smallestscore).toFixed(1);
-        } else {
-            percent = score < 0 ? 100 : 0;
-            let textDigit = "M" + Math.abs(score).toString();
-            window.mateInDigit = Math.abs(score).toString();
-            textScoreAbb = textDigit;
-            if (document.getElementById("movescore") !== null) {
-                if (mateInDigit.toString().charAt(0) !== "-") {
-                    document.getElementById('movescore').style.color = 'lightgreen';
-                    document.getElementById('movescoreprefix').innerHTML = "Checkmate In: "
-                    if (mateInDigit !== 1) {
-                        document.getElementById('movescore').innerHTML = mateInDigit + ' Moves'
-                    } else if (mateInDigit === 1) {
-                        document.getElementById('movescore').innerHTML = mateInDigit + ' Move'
-                    }
-                } else if (mateInDigit.toString().charAt(0) === "-") {
-                    document.getElementById('movescore').style.color = 'red';
-                    document.getElementById('movescoreprefix').innerHTML = "Checkmate In: "
-                    if (mateInDigit !== 1) {
-                        document.getElementById('movescore').innerHTML = mateInDigit + ' Moves'
-                    } else if (mateInDigit === 1) {
-                        document.getElementById('movescore').innerHTML = mateInDigit + ' Move'
-                    }
-                }
-            }
+    if (a.depth_bar && this.depthBar == null) {
+      this.CreateAnalysisTools();
+    } else if (!a.depth_bar && this.depthBar != null) {
+      this.depthBar.parentElement.remove();
+      this.depthBar = null;
+    }
+    if (!a.show_hints) {
+      this.RemoveCurrentMarkings();
+    }
+    if (!a.move_analysis) {
+      let a = this.controller.getLastMove();
+      if (a) {
+        this.controller.markings.removeOne("effect|" + a.to);
+      }
+    }
+  }
+  CreateAnalysisTools() {
+    let a = setInterval(() => {
+      let b = this.chessboard.parentElement;
+      if (b == null) {
+        return;
+      }
+      let c = b.parentElement;
+      if (c == null) {
+        return;
+      }
+      clearInterval(a);
+      if (this.selfowner.options.depth_bar && this.depthBar == null) {
+        let a = document.createElement("div");
+        a.classList.add("depthBarLayout");
+        a.innerHTML = "<div class=\"depthBar\"><span class=\"depthBarProgress\"></span></div>";
+        c.insertBefore(a, b.nextSibling);
+        this.depthBar = a.querySelector(".depthBarProgress");
+      }
+      if (this.selfowner.options.evaluation_bar && this.evalBar == null) {
+        let a = document.createElement("div");
+        a.style.flex = "1 1 auto;";
+        a.innerHTML = "\n                <div class=\"evaluation-bar-bar\">\n                    <span class=\"evaluation-bar-scoreAbbreviated evaluation-bar-dark\">0.0</span>\n                    <span class=\"evaluation-bar-score evaluation-bar-dark \">+0.00</span>\n                    <div class=\"evaluation-bar-fill\">\n                    <div class=\"evaluation-bar-color evaluation-bar-black\"></div>\n                    <div class=\"evaluation-bar-color evaluation-bar-draw\"></div>\n                    <div class=\"evaluation-bar-color evaluation-bar-white\" style=\"transform: translate3d(0px, 50%, 0px);\"></div>\n                    </div>\n                </div>";
+        let c = b.querySelector("#board-layout-evaluation");
+        if (c == null) {
+          c = document.createElement("div");
+          c.classList.add("board-layout-evaluation");
+          b.insertBefore(c, b.firstElementChild);
         }
-        this.evalBarFill.style.transform = `translate3d(0px, ${percent}%, 0px)`;
-        this.evalScore.innerText = textDigit;
-        this.evalScoreAbbreviated.innerText = textScoreAbb;
-        let classSideAdd = (score >= 0) ? "evaluation-bar-dark" : "evaluation-bar-light";
-        let classSideRemove = (score >= 0) ? "evaluation-bar-light" : "evaluation-bar-dark";
-        this.evalScore.classList.remove(classSideRemove);
-        this.evalScoreAbbreviated.classList.remove(classSideRemove);
-        this.evalScore.classList.add(classSideAdd);
-        this.evalScoreAbbreviated.classList.add(classSideAdd);
-    }
-}
-
-class StockfishEngine {
-    constructor(selfowner) {
-        let stockfishJsURL;
-        let stockfishPathConfig = Config.threadedEnginePaths.stockfish;
-        this.selfowner = selfowner;
-        this.loaded = false;
-        this.ready = false;
-        this.isEvaluating = false;
-        this.isRequestedStop = false;
-        this.readyCallbacks = [];
-        this.goDoneCallbacks = [];
-        this.topMoves = [];
-        this.lastTopMoves = [];
-        this.isInTheory = false;
-        this.lastMoveScore = null;
-        this.threads = 10;
-        this.depth = this.selfowner.options.depth;
-        this.options = {
-            "UCI_Elo": this.selfowner.options.elo,
-            "UCI_LimitStrength": this.selfowner.options.limit_strength,
-            "Skill Level": this.selfowner.options.skill_level,
-            "Contempt": this.selfowner.options.contempt,
-            "UCI_Chess960": this.selfowner.options.chess960,
-            "Skill Level Maximum Error": this.selfowner.options.skill_level_error,
-            "Skill Level Probability": this.selfowner.options.skill_level_prob,
+        c.innerHTML = "";
+        c.appendChild(a);
+        this.evalBar = c.querySelector(".evaluation-bar-bar");
+        this.evalBarFill = c.querySelector(".evaluation-bar-white");
+        this.evalScore = c.querySelector(".evaluation-bar-score");
+        this.evalScoreAbbreviated = c.querySelector(".evaluation-bar-scoreAbbreviated");
+        if (!this.options.isWhiteOnBottom && this.options.flipped) {
+          this.evalBar.classList.add("evaluation-bar-flipped");
         }
-
-        // Check if stockfish11 is true to load single-threaded
-        if (this.selfowner.options.stockfish11) {
-            stockfishJsURL = `${stockfishPathConfig.singleThreaded.loader}#${stockfishPathConfig.singleThreaded.engine}`;
-        } else {
-            // Load multi-threaded by default unless an error occurs
-            try {
-                new SharedArrayBuffer(1024);
-                stockfishJsURL = `${stockfishPathConfig.multiThreaded.loader}#${stockfishPathConfig.multiThreaded.engine}`;
-                this.options["Threads"] = 10;
-                if (this.selfowner.options.use_nnue) {
-                    this.options["Use NNUE"] = true;
-                    this.options["EvalFile"] = stockfishPathConfig.multiThreaded.nnue;
-                }
-            } catch (e) {
-                // If there's an error, fall back to single-threaded
-                stockfishJsURL = `${stockfishPathConfig.singleThreaded.loader}#${stockfishPathConfig.singleThreaded.engine}`;
-            }
+      }
+    }, 10);
+  }
+  UpdateEngine(a) {
+    let b = this.controller.getFEN();
+    this.selfowner.engine.UpdatePosition(b, a);
+    this.SetCurrentDepth(0);
+  }
+  ResetGame() {
+    this.UpdateEngine(true);
+  }
+  RemoveCurrentMarkings() {
+    this.currentMarkings.forEach(a => {
+      let b = a.type + "|";
+      if (a.data.square != null) {
+        b += a.data.square;
+      } else {
+        b += "" + a.data.from + a.data.to;
+      }
+      this.controller.markings.removeOne(b);
+    });
+    this.currentMarkings = [];
+  }
+  HintMoves(a, b, c) {
+    let d = this.selfowner.options;
+    let e = a[0];
+    if (d.show_hints) {
+      this.RemoveCurrentMarkings();
+      a.forEach((a, b) => {
+        if (c && a.depth != e.depth) {
+          return;
         }
-        this.options["MultiPV"] = this.selfowner.options.multipv;
-        this.options["Ponder"] = true;
-        try {
-            this.stockfish = new Worker(stockfishJsURL);
-            this.stockfish.onmessage = (e) => {
-                this.ProcessMessage(e);
-                console.log(e.data)
-            };
-        } catch (e) {
-            alert("Failed to load stockfish");
-            throw e;
-        }
-        this.send("uci");
-        this.onReady(() => {
-            this.UpdateOptions();
-            this.send("ucinewgame");
-        });
-    }
-    send(cmd) {
-        this.stockfish.postMessage(cmd);
-        console.log(cmd)
-    }
-    go() {
-        this.onReady(() => {
-            this.stopEvaluation(() => {
-                console.assert(!this.isEvaluating, "Duplicated Stockfish go command");
-                this.isEvaluating = true;
-                this.send(`go depth ${this.depth}`);
-            });
-        });
-    }
-    onReady(callback) {
-        if (this.ready) callback();
-        else {
-            this.readyCallbacks.push(callback);
-            // console.log("send is ready");
-            this.send("isready");
-        }
-    }
-    stopEvaluation(callback) {
-        // stop the evaluation if it is evaluating
-        if (this.isEvaluating) {
-            // cancel the previous callbacks, replace it with this one
-            this.goDoneCallbacks = [callback];
-            this.isRequestedStop = true;
-            this.send("stop");
-        } else {
-            // if there is no evaluation going on, call the function immediately
-            callback();
-        }
-    }
-    UpdatePosition(FENs = null, isNewGame = true) {
-        this.onReady(() => {
-            this.stopEvaluation(() => {
-                this.MoveAndGo(FENs, isNewGame);
-            });
-        });
-    }
-    UpdateExtensionOptions() {
-        this.depth = this.selfowner.options.depth;
-        // trigger this method to show hints, analysis,.. if it was disabled before if
-        // this.isEvaluating is false, it already found the best move
-        if (this.topMoves.length > 0) this.onTopMoves(null, !this.isEvaluating);
-    }
-    UpdateOptions(options = null) {
-        if (options === null) options = this.options;
-        Object.keys(options).forEach((key) => {
-            this.send(`setoption name ${key} value ${options[key]}`);
-        });
-    }
-    ProcessMessage(event) {
-        this.ready = false;
-        let line = (event && typeof event === "object") ? event.data : event;
-        // console.log("SF: " + line);
-        if (line === 'uciok') { // uci engine is ok :p
-            this.loaded = true;
-            this.selfowner.onEngineLoaded();
-        } else if (line === 'readyok') { // uci engine is ready :p
-            this.ready = true;
-            if (this.readyCallbacks.length > 0) {
-                let copy = this.readyCallbacks;
-                this.readyCallbacks = [];
-                copy.forEach(function (callback) {
-                    callback();
-                });
-            }
-        } else if (this.isEvaluating && line === 'Load eval file success: 1') { // nnue eval file loaded :p
-            // we have sent the "go" command before stockfish loaded the eval file
-            // this.isEvaluating will be stuck at true, this fixes it.
-            this.isEvaluating = false;
-            this.isRequestedStop = false;
-            if (this.goDoneCallbacks.length > 0) {
-                let copy = this.goDoneCallbacks;
-                this.goDoneCallbacks = [];
-                copy.forEach(function (callback) {
-                    callback();
-                });
-            }
-        } else {
-            let match = line.match(/^info .*\bdepth (\d+) .*\bseldepth (\d+) .*\bmultipv (\d+) .*\bscore (\w+) (-?\d+) .*\bpv (.+)/);
-            if (match) {
-                if (!this.isRequestedStop) {
-                    let cp = (match[4] == "cp") ? // get score in centipawns from info
-                        parseInt(match[5]) : null;
-                    let mate = (match[4] == "cp") ? // get score in mate from info
-                        null : parseInt(match[5]);
-                    let move = new TopMove(match[6], parseInt(match[1]), cp, mate); // match 6 are the moves, match 1 is the depth, cp, or mate is stockfish's evaluation
-                    if (parseInt(match[3]) <= this.selfowner.options.multipv) { // check multipv against selfowner options
-                        this.onTopMoves(move, false);
-                    }
-                }
-            } else if (match = line.match(/^bestmove ([a-h][1-8][a-h][1-8][qrbn]?)?/)) { // if the engine done calculating
-                this.isEvaluating = false;
-                if (this.goDoneCallbacks.length > 0) {
-                    let copy = this.goDoneCallbacks;
-                    this.goDoneCallbacks = [];
-                    copy.forEach(function (callback) {
-                        callback();
-                    });
-                }
-                if (!this.isRequestedStop && match[1] !== undefined) {
-                    const index = this.topMoves.findIndex(object => object.move === match[1]);
-                    if (index < 0) {
-                        console.assert(false, `The engine returned the best move "${match[1]}" but it's not in the top move list: `, this.topMoves);
-                    }
-                    this.onTopMoves(this.topMoves[index], true);
-                }
-                this.isRequestedStop = false;
-            }
-        }
-    }
-    MoveAndGo(FENs = null, isNewGame = true) {
-        // let it go, let it gooo
-        let go = () => {
-            this.lastTopMoves = isNewGame ? [] : this.topMoves;
-            this.lastMoveScore = null;
-            this.topMoves = [];
-            if (isNewGame) this.isInTheory = ecoTableB != null;;
-            if (this.isInTheory) {
-                let shortFen = this.selfowner.game.controller.getFEN().split(" ").slice(0, 3).join(" ");
-                if (ecoTableB.get(shortFen) !== true) this.isInTheory = false;
-            }
-            if (FENs != null) this.send(`position fen ${FENs}`);
-            this.go();
+        let d = b == 0 ? this.options.arrowColors.alt : b >= 1 && b <= 2 ? this.options.arrowColors.shift : b >= 3 && b <= 5 ? this.options.arrowColors.default : this.options.arrowColors.ctrl;
+        const f = {
+          from: a.from,
+          color: d,
+          opacity: 0.8,
+          to: a.to
         };
-        this.onReady(() => {
-            if (isNewGame) {
-                this.send("ucinewgame");
-                this.onReady(go);
-            } else {
-                go();
-            }
+        const g = f;
+        const h = {
+          data: g,
+          node: true,
+          persistent: true
+        };
+        h.type = "arrow";
+        const i = h;
+        this.currentMarkings.push(i);
+        if (a.mate != null) {
+          this.currentMarkings.push({
+            data: {
+              square: a.to,
+              type: a.mate < 0 ? "ResignWhite" : "WinnerWhite"
+            },
+            node: true,
+            persistent: true,
+            type: "effect"
+          });
+        }
+      });
+      this.currentMarkings.reverse();
+      this.controller.markings.addMany(this.currentMarkings);
+    }
+    if (d.depth_bar) {
+      let a = (c ? e.depth : e.depth - 1) / this.selfowner.engine.depth * 100;
+      this.SetCurrentDepth(a);
+    }
+    if (d.evaluation_bar) {
+      let a = e.mate ?? e.cp;
+      if (this.controller.getTurn() == 2) {
+        a *= -1;
+      }
+      this.SetEvaluation(a, e.mate != null);
+    }
+  }
+  SetCurrentDepth(a) {
+    if (this.depthBar == null) {
+      return;
+    }
+    let b = this.depthBar.style;
+    if (a <= 0) {
+      this.depthBar.classList.add("disable-transition");
+      b.width = "0%";
+      this.depthBar.classList.remove("disable-transition");
+    } else {
+      if (a > 100) {
+        a = 100;
+      }
+      b.width = a + "%";
+    }
+  }
+  SetEvaluation(a, b) {
+    if (this.evalBar == null) {
+      return;
+    }
+    var c;
+    var d;
+    var e;
+    if (!b) {
+      let b = 500;
+      let f = -500;
+      let g = a / 100;
+      c = 90 - (a - f) / (b - f) * 90 + 5;
+      if (c < 5) {
+        c = 5;
+      } else if (c > 95) {
+        c = 95;
+      }
+      d = (a >= 0 ? "+" : "") + g.toFixed(2);
+      e = Math.abs(g).toFixed(1);
+    } else {
+      c = a < 0 ? 100 : 0;
+      d = "M" + Math.abs(a).toString();
+      e = d;
+    }
+    this.evalBarFill.style.transform = "translate3d(0px, " + c + "%, 0px)";
+    this.evalScore.innerText = d;
+    this.evalScoreAbbreviated.innerText = e;
+    let f = a >= 0 ? "evaluation-bar-dark" : "evaluation-bar-light";
+    let g = a >= 0 ? "evaluation-bar-light" : "evaluation-bar-dark";
+    this.evalScore.classList.remove(g);
+    this.evalScoreAbbreviated.classList.remove(g);
+    this.evalScore.classList.add(f);
+    this.evalScoreAbbreviated.classList.add(f);
+  }
+}
+class g {
+  constructor(a) {
+    let b = null;
+    if (a.options.torch) {
+      b = "https://www.chess.com/bundles/app/js/engine/torch.ff2549db.js#/bundles/app/js/engine/torch.94440d8f.wasm";
+    } else if (a.options.stockfish11) {
+      b = "https://www.chess.com/bundles/app/js/engine/stockfish-single.830cf9cc.js#/bundles/app/js/engine/stockfish-single.8ffa2b70.wasm";
+    } else if (a.options.stockfish16) {
+      b = "https://www.chess.com/bundles/app/js/engine/stockfish-nnue-16.840e654f.js#/bundles/app/js/engine/stockfish-nnue-16.9ffe613d.wasm";
+    }
+    if (!b) {
+      console.error("No engine selected.");
+      return;
+    }
+    this.selfowner = a;
+    this.loaded = false;
+    this.ready = false;
+    this.isEvaluating = false;
+    this.isRequestedStop = false;
+    this.readyCallbacks = [];
+    this.goDoneCallbacks = [];
+    this.topMoves = [];
+    this.FirstMoves = {};
+    this.lastTopMoves = [];
+    this.isInTheory = false;
+    this.lastMoveScore = null;
+    this.threads = 10;
+    this.depth = this.selfowner.options.depth;
+    this.options = {
+      UCI_Elo: this.selfowner.options.elo,
+      UCI_LimitStrength: this.selfowner.options.limit_strength,
+      "Skill Level": this.selfowner.options.skill_level,
+      MoveOverhead: this.selfowner.options.moveoverhead,
+      Syzygy50MoveRule: this.selfowner.options.syzygy50moverule,
+      Contempt: this.selfowner.options.contempt,
+      Pretty: this.selfowner.options.pretty,
+      SyzygyProbeDepth: this.selfowner.options.syzygyprobedepth,
+      SyzygyProbeLimit: this.selfowner.options.syzygyprobelimit,
+      UCI_Chess960: this.selfowner.options.chess960,
+      UCI_Normalize: this.selfowner.options.normalize,
+      UCI_NormalizeFactor: this.selfowner.options.normalizefactor,
+      "Skill Level Maximum Error": this.selfowner.options.skill_level_error,
+      "Skill Level Probability": this.selfowner.options.skill_level_prob
+    };
+    try {
+      new SharedArrayBuffer(1024);
+      this.options.Threads = 10;
+      if (this.selfowner.options.use_nnue) {
+        this.options["Use NNUE"] = true;
+        this.options.EvalFile = Config.threadedEnginePaths.stockfish.multiThreaded.nnue;
+      }
+    } catch (a) {}
+    this.options.MultiPV = this.selfowner.options.multipv;
+    this.options.Ponder = true;
+    try {
+      this.stockfish = new Worker(b);
+      this.stockfish.onmessage = a => {
+        this.ProcessMessage(a);
+        console.log(a.data);
+      };
+    } catch (a) {
+      alert("Failed to load the engine");
+      throw a;
+    }
+    this.send("uci");
+    this.onReady(() => {
+      this.UpdateOptions();
+      this.send("ucinewgame");
+    });
+  }
+  send(a) {
+    this.stockfish.postMessage(a);
+    console.log(a);
+  }
+  go() {
+    this.onReady(() => {
+      this.stopEvaluation(() => {
+        console.assert(!this.isEvaluating, "Duplicated Stockfish go command");
+        this.isEvaluating = true;
+        this.send("go depth " + this.depth);
+      });
+    });
+  }
+  onReady(a) {
+    if (this.ready) {
+      a();
+    } else {
+      this.readyCallbacks.push(a);
+      this.send("isready");
+    }
+  }
+  stopEvaluation(a) {
+    if (this.isEvaluating) {
+      this.goDoneCallbacks = [a];
+      this.isRequestedStop = true;
+      this.send("stop");
+    } else {
+      a();
+    }
+  }
+  UpdatePosition(a = null, b = true) {
+    this.onReady(() => {
+      this.stopEvaluation(() => {
+        this.MoveAndGo(a, b);
+      });
+    });
+  }
+  UpdateExtensionOptions() {
+    this.depth = this.selfowner.options.depth;
+    if (this.topMoves.length > 0) {
+      this.onTopMoves(null, !this.isEvaluating);
+    }
+  }
+  UpdateOptions(a = null) {
+    if (a === null) {
+      a = this.options;
+    }
+    Object.keys(a).forEach(b => {
+      this.send("setoption name " + b + " value " + a[b]);
+    });
+  }
+  ProcessMessage(a) {
+    this.ready = false;
+    let b = a && typeof a === "object" ? a.data : a;
+    if (b === "uciok") {
+      this.loaded = true;
+      this.selfowner.onEngineLoaded();
+    } else if (b === "readyok") {
+      this.ready = true;
+      if (this.readyCallbacks.length > 0) {
+        let a = this.readyCallbacks;
+        this.readyCallbacks = [];
+        a.forEach(function (a) {
+          a();
         });
+      }
+    } else if (this.isEvaluating && b === "Load eval file success: 1") {
+      this.isEvaluating = false;
+      this.isRequestedStop = false;
+      if (this.goDoneCallbacks.length > 0) {
+        let a = this.goDoneCallbacks;
+        this.goDoneCallbacks = [];
+        a.forEach(function (a) {
+          a();
+        });
+      }
+    } else if (this.selfowner.options.torch) {
+      let a = b.match(/^info .*depth (\d+) .*multipv (\d+) .*score (cp|mate) (-?\d+) .*pv ([a-h][1-8][a-h][1-8][qrbn]?)/);
+      let c = b.match(/^bestmove ([a-h][1-8][a-h][1-8][qrbn]?)?/);
+      if (a) {
+        let b = parseInt(a[1]);
+        let c = parseInt(a[2]);
+        let d = a[3];
+        let f = parseInt(a[4]);
+        let g = a[5];
+        if (!isNaN(b) && !isNaN(c) && !isNaN(f)) {
+          let a = new e(g, b, d === "cp" ? f : null, d === "mate" ? f : null);
+          this.onTopMoves(a, false);
+        }
+      } else if (c) {
+        this.isEvaluating = false;
+        if (this.goDoneCallbacks.length > 0) {
+          let a = this.goDoneCallbacks;
+          this.goDoneCallbacks = [];
+          a.forEach(function (a) {
+            a();
+          });
+        }
+        if (!this.isRequestedStop && c[1] !== undefined) {
+          const a = c[1];
+          const b = this.topMoves.findIndex(b => b.move === a);
+          if (b >= 0) {
+            const a = this.topMoves.splice(b, 1)[0];
+            this.topMoves.unshift(a);
+            this.onTopMoves(a, true);
+          }
+        }
+        this.isRequestedStop = false;
+      }
+    } else {
+      let a = b.match(/^info .*\bdepth (\d+) .*\bseldepth (\d+) .*\bmultipv (\d+) .*\bscore (\w+) (-?\d+) .*\bpv (.+)/);
+      if (a) {
+        if (!this.isRequestedStop) {
+          let b = a[4] == "cp" ? parseInt(a[5]) : null;
+          let c = a[4] == "cp" ? null : parseInt(a[5]);
+          let d = new e(a[6], parseInt(a[1]), b, c);
+          if (parseInt(a[3]) <= this.selfowner.options.multipv) {
+            this.onTopMoves(d, false);
+          }
+        }
+      } else if (a = b.match(/^bestmove ([a-h][1-8][a-h][1-8][qrbn]?)?/)) {
+        this.isEvaluating = false;
+        if (this.goDoneCallbacks.length > 0) {
+          let a = this.goDoneCallbacks;
+          this.goDoneCallbacks = [];
+          a.forEach(function (a) {
+            a();
+          });
+        }
+        if (!this.isRequestedStop && a[1] !== undefined) {
+          const b = this.topMoves.findIndex(b => b.move === a[1]);
+          if (b < 0) {
+            console.assert(false, "The engine returned the best move \"" + a[1] + "\" but it's not in the top move list: ", this.topMoves);
+          }
+          this.onTopMoves(this.topMoves[b], true);
+        }
+        this.isRequestedStop = false;
+      }
     }
-    AnalyzeLastMove() {
-        this.lastMoveScore = null;
-        let lastMove = this.selfowner.game.controller.getLastMove();
-        if (lastMove === undefined) return;
-        if (this.isInTheory) {
-            this.lastMoveScore = "Book";
-        } else if (this.lastTopMoves.length > 0) {
-            let lastBestMove = this.lastTopMoves[0];
-            // check if last move is the best move
-            if (lastBestMove.from === lastMove.from && lastBestMove.to === lastMove.to) {
-                this.lastMoveScore = "BestMove";
-            } else {
-                let bestMove = this.topMoves[0];
-                if (lastBestMove.mate != null) {
-                    // if last move is losing mate, this move just escapes a mate if last move is
-                    // winning mate, this move is a missed win
-                    if (bestMove.mate == null) {
-                        this.lastMoveScore = lastBestMove.mate > 0 ? "MissedWin" : "Brilliant";
-                    } else {
-                        // both moves are mate
-                        this.lastMoveScore = lastBestMove.mate > 0 ? "Excellent" : "ResignWhite";
-                    }
-                } else if (bestMove.mate != null) {
-                    // brilliant if it found a mate, blunder if it moved into a mate
-                    this.lastMoveScore = bestMove.mate < 0 ? "Brilliant" : "Blunder";
-                } else if (bestMove.cp != null && lastBestMove.cp != null) {
-                    let evalDiff = -(bestMove.cp + lastBestMove.cp);
-                    if (evalDiff > 100) this.lastMoveScore = "Brilliant";
-                    else if (evalDiff > 0) this.lastMoveScore = "GreatFind";
-                    else if (evalDiff > -10) this.lastMoveScore = "BestMove";
-                    else if (evalDiff > -25) this.lastMoveScore = "Excellent";
-                    else if (evalDiff > -50) this.lastMoveScore = "Good";
-                    else if (evalDiff > -100) this.lastMoveScore = "Inaccuracy";
-                    else if (evalDiff > -250) this.lastMoveScore = "Mistake";
-                    else this.lastMoveScore = "Blunder";
-                } else {
-                    console.assert(false, "Error while analyzing last move");
-                }
-            }
+  }
+  MoveAndGo(a = null, b = true) {
+    let d = () => {
+      this.lastTopMoves = b ? [] : this.topMoves;
+      this.lastMoveScore = null;
+      this.topMoves = [];
+      if (b) {
+        this.isInTheory = c != null;
+      }
+      ;
+      if (this.isInTheory) {
+        let a = this.selfowner.game.controller.getFEN().split(" ").slice(0, 3).join(" ");
+        if (c.get(a) !== true) {
+          this.isInTheory = false;
         }
-        // add highlight and effect
-        if (this.lastMoveScore != null) {
-            const highlightColors = {
-                "Brilliant": "#1baca6",
-                "GreatFind": "#5c8bb0",
-                "BestMove": "#9eba5a",
-                "Excellent": "#96bc4b",
-                "Good": "#96af8b",
-                "Book": "#a88865",
-                "Inaccuracy": "#f0c15c",
-                "Mistake": "#e6912c",
-                "Blunder": "#b33430",
-                "MissedWin": "#dbac16"
-            };
-            let hlColor = highlightColors[this.lastMoveScore];
-            if (hlColor != null) {
-                this.selfowner.game.controller.markings.addOne({
-                    data: {
-                        opacity: 0.5,
-                        color: hlColor,
-                        square: lastMove.to
-                    },
-                    node: true,
-                    persistent: true,
-                    type: "highlight"
-                });
-            }
-            // this.selfowner.game.controller.markings.removeOne(`effect|${lastMove.to}`);
-            this.selfowner.game.controller.markings.addOne({
-                data: {
-                    square: lastMove.to,
-                    type: this.lastMoveScore
-                },
-                node: true,
-                persistent: true,
-                type: "effect"
-            });
-            if (this.lastMoveScore === "Blunder") {
-                this.selfowner.game.controller.markings.addOne({
-                    data: {
-                        square: lastMove.to,
-                        type: "Blunder"
-                    },
-                    node: true,
-                    persistent: true,
-                    type: "effect"
-                });
-            }
-        }
+      }
+      if (a != null) {
+        this.send("position fen " + a);
+      }
+      this.go();
+    };
+    this.onReady(() => {
+      if (b) {
+        this.send("ucinewgame");
+        this.onReady(d);
+      } else {
+        d();
+      }
+    });
+  }
+  AnalyzeLastMove() {
+    this.lastMoveScore = null;
+    let a = this.selfowner.game.controller.getLastMove();
+    if (a === undefined) {
+      return;
     }
-    onTopMoves(move = null, isBestMove = false) {
-        window.top_pv_moves = []; // Initialize top_pv_moves as an empty array
-        var bestMoveSelected = false;
-    
-        if (move != null) {
-            const index = this.topMoves.findIndex((object) => object.move === move.move);
-    
-            if (isBestMove) { // Engine just finished evaluation
-                bestMoveSelected = true; // A best move has been selected
-            } else {
-                if (index === -1) {
-                    move.skillLevel = this.options["Skill Level"];
-                    move.UCI_Elo = this.options["UCI_Elo"];
-                    move.UCI_LimitStrength = this.options["UCI_LimitStrength"];
-                    this.topMoves.push(move);
-                    this.SortTopMoves();
-                } else if (move.depth >= this.topMoves[index].depth) {
-                    move.skillLevel = this.options["Skill Level"];
-                    move.UCI_Elo = this.options["UCI_Elo"];
-                    move.UCI_LimitStrength = this.options["UCI_LimitStrength"];
-                    this.topMoves[index] = move;
-                    this.SortTopMoves();
-                }
-            }
-        }
-    
-        if (this.selfowner.options.text_to_speech) {
-            const topMove = this.topMoves[0]; // Select the top move from the PV list
-            const msg = new SpeechSynthesisUtterance(topMove.move); // Use topMove.move for the spoken text
-            const voices = window.speechSynthesis.getVoices();
-            const femaleVoices = voices.filter(voice => voice.voiceURI.includes("Google UK English Female"));
-            if (femaleVoices.length > 0) {
-                msg.voice = femaleVoices[0];
-            }
-            msg.volume = 0.75; // Set the volume to 75%
-            msg.rate = 1;
-            window.speechSynthesis.cancel(); // Stop any previous text-to-speech
-            window.speechSynthesis.speak(msg);
-        } 
-
-        if (bestMoveSelected) {
-            // If a best move has been selected, consider all moves in topMoves
-            top_pv_moves = this.topMoves.slice(0, this.options["MultiPV"]); // sort by rank in multipv
-            this.selfowner.game.HintMoves(top_pv_moves, this.lastTopMoves, isBestMove);
-
-            if (this.selfowner.options.move_analysis) {
-                this.AnalyzeLastMove();
-            }
-        } else {
-            if (this.selfowner.options.legit_auto_move) { // legit move stuff, ignore
-                const movesWithAccuracy = this.topMoves.filter(move => move.accuracy !== undefined);
-
-                if (movesWithAccuracy.length > 0) {
-                    // Sort the moves by accuracy in descending order
-                    movesWithAccuracy.sort((a, b) => b.accuracy - a.accuracy);
-
-                    // Calculate the total accuracy
-                    const totalAccuracy = movesWithAccuracy.reduce((sum, move) => sum + move.accuracy, 0);
-
-                    // Calculate the cumulative probabilities
-                    const cumulativeProbabilities = movesWithAccuracy.reduce((arr, move) => {
-                        const lastProbability = arr.length > 0 ? arr[arr.length - 1] : 0;
-                        const probability = move.accuracy / totalAccuracy;
-                        arr.push(lastProbability + probability);
-                        return arr;
-                    }, []);
-
-                    // Generate a random number between 0 and 1
-                    const random = Math.random();
-
-                    // Select a move based on the cumulative probabilities
-                    let selectedMove;
-                    for (let i = 0; i < cumulativeProbabilities.length; i++) {
-                        if (random <= cumulativeProbabilities[i]) {
-                            selectedMove = movesWithAccuracy[i];
-                            break;
-                        }
-                    }
-
-                    // Move the selected move to the front of the PV moves
-                    top_pv_moves = [selectedMove, ...this.topMoves.filter(move => move !== selectedMove)];
-                } else {
-                    // If no moves have accuracy information, use the normal PV moves
-                    top_pv_moves = this.topMoves.slice(0, this.options["MultiPV"]);
-
-                }
-            } // end ignore
-            if (this.selfowner.options.legit_auto_move) { // random crap with auto move
-                const randomMoveIndex = Math.floor(Math.random() * top_pv_moves.length);
-                const randomMove = top_pv_moves[randomMoveIndex];
-                top_pv_moves = [randomMove, ...top_pv_moves.filter(move => move !== randomMove)]; // Move the random move to the front of the PV moves
-            } else { // if no auto move and engine aint even done, idfk what this is doing
-                top_pv_moves = this.topMoves.slice(0, this.options["MultiPV"]);
-            }
-        }
-
-        const bestMoveChance = this.selfowner.options.best_move_chance;
-        if (Math.random() * 100 < bestMoveChance && this.selfowner.options.legit_auto_move) {
-            top_pv_moves = [top_pv_moves[0]]; // Only consider the top move
-        } else {
-            const randomMoveIndex = Math.floor(Math.random() * top_pv_moves.length);
-            const randomMove = top_pv_moves[randomMoveIndex];
-            top_pv_moves = [randomMove, ...top_pv_moves.filter(move => move !== randomMove)]; // Move the random move to the front of the PV moves
-        }
-
-        if (bestMoveSelected && this.selfowner.options.legit_auto_move && this.selfowner.game.controller.getPlayingAs() === this.selfowner.game.controller.getTurn()) {
-            let bestMove;
-            if (this.selfowner.options.random_best_move) {
-                const random_best_move_index = Math.floor(Math.random() * top_pv_moves.length);
-                bestMove = top_pv_moves[random_best_move_index];
-            } else {
-                bestMove = top_pv_moves[0];
-            }
-            const legalMoves = this.selfowner.game.controller.getLegalMoves();
-            const index = legalMoves.findIndex(
-                (move) => move.from === bestMove.from && move.to === bestMove.to);
-            console.assert(index !== -1, "Illegal best move");
-            const moveData = legalMoves[index];
-            moveData.userGenerated = true;
-            if (bestMove.promotion !== null) {
-                moveData.promotion = bestMove.promotion;
-            }
-            if (this.selfowner.options.highmatechance) {
-                const sortedMoves = this.topMoves.sort((a, b) => {
-                    if (a.mateInDigit !== null && b.mateInDigit === null) {
-                        return -1;
-                    } else if (a.mateInDigit === null && b.mateInDigit !== null) {
-                        return 1;
-                    } else if (a.mateInDigit !== null && b.mateInDigit !== null) {
-                        if (a.mateInDigit <= this.selfowner.options.matefindervalue && b.mateInDigit <= this.selfowner.options.matefindervalue) {
-                            return a.mateInDigit - b.mateInDigit;
-                        } else {
-                            return 0;
-                        }
-                    } else {
-                        return 0;
-                    }
-                });
-                top_pv_moves = sortedMoves.slice(0, Math.min(this.options["MultiPV"], this.topMoves.length));
-                const mateMoves = top_pv_moves.filter((move) => move.mateInDigit !== null);
-                if (mateMoves.length > 0) {
-                    const fastestMateMove = mateMoves.reduce((a, b) => (a.mateInDigit < b.mateInDigit ? a : b));
-                    top_pv_moves = [fastestMateMove];
-                }
-            }
-            let auto_move_time = this.selfowner.options.auto_move_time + (Math.floor(Math.random() * this.selfowner.options.auto_move_time_random) % this.selfowner.options.auto_move_time_random_div) * this.selfowner.options.auto_move_time_random_multi;
-            if (isNaN(auto_move_time) || auto_move_time === null || auto_move_time === undefined) {
-                auto_move_time = 0;
-            }
-            let secondsTillAutoMove = (auto_move_time / 1000).toFixed(1);
-
-            // Check if auto_move_time is 0 or 0.0
-            if (auto_move_time === 0 || auto_move_time === 0.0) {
-                secondsTillAutoMove = 0.1; // Set display value to 0.1
-            }
-            
-            if (window.toaster) {
-                window.toaster.add({
-                    id: "chess.com",
-                    duration: auto_move_time, // Use the original duration value
-                    icon: "circle-info",
-                    content: `BetterMint: Auto move in ${secondsTillAutoMove} seconds`,
-                    // autoClose: 3000,
-                    style: {
-                        position: "fixed",
-                        bottom: "60px",
-                        right: "30px",
-                        backgroundColor: "black",
-                        color: "white",
-                    },
-                });
-            }
-            setTimeout(() => {
-                this.selfowner.game.controller.move(moveData);
-            }, auto_move_time);
-        }
-    }
-    SortTopMoves() {
-        let sortingMode = "normal";
-      
-        if (this.selfowner.options.aggressive_mode) {
-          sortingMode = "aggressive";
-        } else if (this.selfowner.options.defensive_mode) {
-          sortingMode = "defensive";
-        }
-      
-        this.topMoves.sort(function (a, b) {
-          if (sortingMode === "aggressive") {
-            // Aggressive move sorting
-            if (b.mate !== null) {
-              if (a.mate !== null) {
-                // Both moves are mate moves
-                return a.mate - b.mate; // Sort by mate value in ascending order
-              }
-              // Only b is a mate move, prioritize b
-              return 1;
-            }
-            if (a.mate !== null) {
-              // Only a is a mate move, prioritize a
-              return -1;
-            }
-      
-            // Neither move is a mate move
-            if (a.depth === b.depth) {
-              if (a.cp === b.cp) {
-                return 0;
-              }
-              return a.cp > b.cp ? -1 : 1;
-            }
-            return a.depth > b.depth ? -1 : 1;
-          } else if (sortingMode === "defensive") {
-            // Defensive move sorting
-            if (b.mate !== null) {
-              if (a.mate !== null) {
-                // Both moves are mate moves
-                // Introduce randomness to mate moves in defensive mode
-                return Math.random() > 0.5 ? a.mate - b.mate : b.mate - a.mate;
-              }
-              // Only b is a mate move, prioritize b
-              return 1;
-            }
-            if (a.mate !== null) {
-              // Only a is a mate move, prioritize a
-              return -1;
-            }
-      
-            // Neither move is a mate move
-            if (a.depth === b.depth) {
-              if (a.cp === b.cp) {
-                return 0;
-              }
-              return a.cp > b.cp ? -1 : 1;
-            }
-            return a.depth > b.depth ? -1 : 1;
+    if (this.isInTheory) {
+      this.lastMoveScore = "Book";
+    } else if (this.lastTopMoves.length > 0) {
+      let b = this.lastTopMoves[0];
+      if (b.from === a.from && b.to === a.to) {
+        this.lastMoveScore = "BestMove";
+      } else {
+        let a = this.topMoves[0];
+        if (b.mate != null) {
+          if (a.mate == null) {
+            this.lastMoveScore = b.mate > 0 ? "MissedWin" : "Brilliant";
           } else {
-            // Normal move sorting (same as provided detailedMoves.sort code)
-            if (b.mate !== null && a.mate === null) {
-              return b.mate > 0 ? 1 : -1; // Sort moves with positive 'mate' value first
+            this.lastMoveScore = b.mate > 0 ? "Excellent" : "ResignWhite";
+          }
+        } else if (a.mate != null) {
+          this.lastMoveScore = a.mate < 0 ? "Brilliant" : "Blunder";
+        } else if (a.cp != null && b.cp != null) {
+          let c = -(a.cp + b.cp);
+          if (c > 100) {
+            this.lastMoveScore = "Brilliant";
+          } else if (c > 0) {
+            this.lastMoveScore = "GreatFind";
+          } else if (c > -10) {
+            this.lastMoveScore = "BestMove";
+          } else if (c > -25) {
+            this.lastMoveScore = "Excellent";
+          } else if (c > -50) {
+            this.lastMoveScore = "Good";
+          } else if (c > -100) {
+            this.lastMoveScore = "Inaccuracy";
+          } else if (c > -250) {
+            this.lastMoveScore = "Mistake";
+          } else {
+            this.lastMoveScore = "Blunder";
+          }
+        } else {
+          console.assert(false, "Error while analyzing last move");
+        }
+      }
+    }
+    if (this.lastMoveScore != null) {
+      const b = {
+        Brilliant: "#1baca6",
+        GreatFind: "#5c8bb0",
+        BestMove: "#9eba5a",
+        Excellent: "#96bc4b",
+        Good: "#96af8b",
+        Book: "#a88865",
+        Inaccuracy: "#f0c15c",
+        Mistake: "#e6912c",
+        Blunder: "#b33430",
+        MissedWin: "#dbac16"
+      };
+      let c = b[this.lastMoveScore];
+      if (c != null) {
+        const b = {
+          opacity: 0.5,
+          color: c,
+          square: a.to
+        };
+        const d = b;
+        const e = {
+          data: d,
+          node: true,
+          persistent: true
+        };
+        e.type = "highlight";
+        const f = e;
+        this.selfowner.game.controller.markings.addOne(f);
+      }
+      this.selfowner.game.controller.markings.addOne({
+        data: {
+          square: a.to,
+          type: this.lastMoveScore
+        },
+        node: true,
+        persistent: true,
+        type: "effect"
+      });
+    }
+  }
+  onTopMoves(a = null, b = false) {
+    window.top_pv_moves = [];
+    var c = false;
+    if (a != null) {
+      const d = this.topMoves.findIndex(b => b.move === a.move);
+      if (b) {
+        c = true;
+      } else if (d === -1) {
+        this.topMoves.push(a);
+        this.SortTopMoves();
+      } else if (a.depth >= this.topMoves[d].depth) {
+        this.topMoves[d] = a;
+        this.SortTopMoves();
+      }
+    }
+    if (this.selfowner.options.text_to_speech) {
+      const a = this.topMoves[0];
+      const b = new SpeechSynthesisUtterance(a.move);
+      const c = window.speechSynthesis.getVoices();
+      const d = c.filter(a => a.voiceURI.includes("Google UK English Female"));
+      if (d.length > 0) {
+        b.voice = d[0];
+      }
+      b.volume = 0.75;
+      b.rate = 1;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(b);
+    }
+    if (c) {
+      top_pv_moves = this.topMoves.slice(0, this.options.MultiPV);
+      this.selfowner.game.HintMoves(top_pv_moves, this.lastTopMoves, b);
+      if (this.selfowner.options.move_analysis) {
+        this.AnalyzeLastMove();
+      }
+    } else {
+      if (this.selfowner.options.legit_auto_move) {
+        const a = this.topMoves.filter(a => a.accuracy !== undefined);
+        if (a.length > 0) {
+          a.sort((a, b) => b.accuracy - a.accuracy);
+          const b = a.reduce((a, b) => a + b.accuracy, 0);
+          const c = a.reduce((a, c) => {
+            const d = a.length > 0 ? a[a.length - 1] : 0;
+            const e = c.accuracy / b;
+            a.push(d + e);
+            return a;
+          }, []);
+          const d = Math.random();
+          let e;
+          for (let b = 0; b < c.length; b++) {
+            if (d <= c[b]) {
+              e = a[b];
+              break;
             }
-            if (a.mate !== null && b.mate === null) {
-              return a.mate < 0 ? 1 : -1; // Sort moves with negative 'mate' value first
+          }
+          top_pv_moves = [e, ...this.topMoves.filter(a => a !== e)];
+        } else {
+          top_pv_moves = this.topMoves.slice(0, this.options.MultiPV);
+        }
+      }
+      if (this.selfowner.options.legit_auto_move) {
+        const a = Math.floor(Math.random() * top_pv_moves.length);
+        const b = top_pv_moves[a];
+        top_pv_moves = [b, ...top_pv_moves.filter(a => a !== b)];
+      } else {
+        top_pv_moves = this.topMoves.slice(0, this.options.MultiPV);
+      }
+    }
+    const d = this.selfowner.options.best_move_chance;
+    if (Math.random() * 100 < d && this.selfowner.options.legit_auto_move) {
+      top_pv_moves = [top_pv_moves[0]];
+    } else {
+      const a = Math.floor(Math.random() * top_pv_moves.length);
+      const b = top_pv_moves[a];
+      top_pv_moves = [b, ...top_pv_moves.filter(a => a !== b)];
+    }
+    if (c && this.selfowner.options.legit_auto_move && this.selfowner.game.controller.getPlayingAs() === this.selfowner.game.controller.getTurn()) {
+      let a;
+      if (this.selfowner.options.random_best_move) {
+        const b = Math.floor(Math.random() * top_pv_moves.length);
+        a = top_pv_moves[b];
+      } else {
+        a = top_pv_moves[0];
+      }
+      const b = this.selfowner.game.controller.getLegalMoves();
+      const c = b.findIndex(b => b.from === a.from && b.to === a.to);
+      console.assert(c !== -1, "Illegal best move");
+      const d = b[c];
+      d.userGenerated = true;
+      if (a.promotion !== null) {
+        d.promotion = a.promotion;
+      }
+      if (this.selfowner.options.highmatechance) {
+        const a = this.topMoves.sort((a, b) => {
+          if (a.mateIn !== null && b.mateIn === null) {
+            return -1;
+          } else if (a.mateIn === null && b.mateIn !== null) {
+            return 1;
+          } else if (a.mateIn !== null && b.mateIn !== null) {
+            if (a.mateIn <= this.selfowner.options.matefindervalue && b.mateIn <= this.selfowner.options.matefindervalue) {
+              return a.mateIn - b.mateIn;
+            } else {
+              return 0;
             }
-            if (a.mate === null && b.mate === null) {
-              if (+a.depth === +b.depth) {
-                return a.cp === b.cp ? 0 : a.cp > b.cp ? -1 : 1; // Sort based on 'cp' (centipawn)
-              }
-              return +a.depth > +b.depth ? -1 : 1; // Sort based on 'depth'
-            }
-            if (a.mate < 0 && b.mate < 0) {
-              return a.line.length === b.line.length ? 0 : a.line.length < b.line.length ? 1 : -1; // Sort based on 'line' length in descending order
-            }
-            if (a.mate > 0 && b.mate > 0) {
-              return a.line.length === b.line.length ? 0 : a.line.length > b.line.length ? 1 : -1; // Sort based on 'line' length in ascending order
-            }
-            return a.mate < b.mate ? 1 : -1; // Sort remaining moves based on 'mate' value in descending order
+          } else {
+            return 0;
+          }
+        });
+        top_pv_moves = a.slice(0, Math.min(this.options.MultiPV, this.topMoves.length));
+        const b = top_pv_moves.filter(a => a.mateIn !== null);
+        if (b.length > 0) {
+          const a = b.reduce((a, b) => a.mateIn < b.mateIn ? a : b);
+          top_pv_moves = [a];
+        }
+      }
+      let e = this.selfowner.options.auto_move_time + Math.floor(Math.random() * this.selfowner.options.auto_move_time_random) % this.selfowner.options.auto_move_time_random_div * this.selfowner.options.auto_move_time_random_multi;
+      if (isNaN(e) || e === null || e === undefined) {
+        e = 100;
+      }
+      const f = (e / 1000).toFixed(1);
+      if (window.toaster) {
+        window.toaster.add({
+          id: "chess.com",
+          duration: (parseFloat(f) + 1) * 1000,
+          icon: "circle-info",
+          content: "Bettermint: Auto move in " + f + " seconds",
+          style: {
+            position: "fixed",
+            bottom: "60px",
+            right: "30px",
+            backgroundColor: "black",
+            color: "white"
           }
         });
       }
-    }      
-class BetterMint {
-    constructor(chessboard, options) {
-        this.options = options;
-        this.game = new GameController(this, chessboard);
-        this.engine = new StockfishEngine(this);
-        window.addEventListener("BetterMintUpdateOptions", (event) => {
-            this.options = event.detail;
-            this.game.UpdateExtensionOptions();
-            this.engine.UpdateExtensionOptions();
-            // show a notification when the settings is updated, but only if the previous
-            // notification has gone
-            if (window.toaster && window.toaster.notifications.findIndex((noti) => noti.id == "bettermint-settings-updated") == -1) {
-                window.toaster.add({
-                    id: "bettermint-settings-updated",
-                    duration: 2000,
-                    icon: "circle-gearwheel",
-                    content: `Settings updated!`
-                });
+      setTimeout(() => {
+        this.selfowner.game.controller.move(d);
+      }, e);
+    }
+  }
+  SortTopMoves() {
+    let a = "normal";
+    if (this.selfowner.options.aggressive_mode) {
+      a = "aggressive";
+    } else if (this.selfowner.options.defensive_mode) {
+      a = "defensive";
+    }
+    this.topMoves.sort(function (b, c) {
+      if (a === "aggressive") {
+        if (c.mate !== null) {
+          if (b.mate !== null) {
+            return b.mate - c.mate;
+          }
+          return 1;
+        }
+        if (b.mate !== null) {
+          return -1;
+        }
+        if (b.depth === c.depth) {
+          if (b.cp === c.cp) {
+            return 0;
+          }
+          if (b.cp > c.cp) {
+            return -1;
+          } else {
+            return 1;
+          }
+        }
+        if (b.depth > c.depth) {
+          return -1;
+        } else {
+          return 1;
+        }
+      } else if (a === "defensive") {
+        if (c.mate !== null) {
+          if (b.mate !== null) {
+            if (Math.random() > 0.5) {
+              return b.mate - c.mate;
+            } else {
+              return c.mate - b.mate;
             }
-        }, false);
-    }
-    onEngineLoaded() {
-        if (window.toaster) {
-            window.toaster.add({
-                id: "chess.com",
-                duration: 3000,
-                icon: "circle-info",
-                content: `BetterMint is enabled!`
-            });
+          }
+          return 1;
         }
-    }
-}
-/* The above code defines a JavaScript module named `ChromeRequest` that exports a single function
-`getData`. This function takes a `data` parameter and returns a Promise that resolves with the data
-received from a custom event dispatched on the `window` object. The custom event is named
-"BetterMintGetOptions" and is expected to be handled by an event listener that will send a response
-event named "BetterMintSendOptions" with the requested data. The `requestId` variable is used to
-uniquely identify each request and match the response to the correct request. */
-var ChromeRequest = (function () { // Options listener and sender
-    var requestId = 0;
-
-    function getData(data) {
-        var id = requestId++;
-        return new Promise(function (resolve, reject) {
-            var listener = function (evt) {
-                if (evt.detail.requestId == id) {
-                    // Deregister self
-                    window.removeEventListener("BetterMintSendOptions", listener);
-                    resolve(evt.detail.data);
-                }
-            };
-            window.addEventListener("BetterMintSendOptions", listener);
-            var payload = {
-                data: data,
-                id: id
-            };
-            window.dispatchEvent(new CustomEvent("BetterMintGetOptions", {
-                detail: payload
-            }));
-        });
-    }
-    return {
-        getData: getData
-    };
-})();
-
-function InitBetterMint(chessboard) {
-    fetch(Config.pathToEcoJson).then(function (response) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let table = yield response.json();
-            ecoTableB = new Map(table.map((data) => [data.f, true]));
-        });
-    });
-    // get the extension options
-    ChromeRequest.getData().then(function (options) {
-        try {
-            selfowner = new BetterMint(chessboard, options);
-        } catch (e) {
-            console.error(e);
-            console.error('oh noes selfowner didnt load')
+        if (b.mate !== null) {
+          return -1;
         }
+        if (b.depth === c.depth) {
+          if (b.cp === c.cp) {
+            return 0;
+          }
+          if (b.cp > c.cp) {
+            return -1;
+          } else {
+            return 1;
+          }
+        }
+        if (b.depth > c.depth) {
+          return -1;
+        } else {
+          return 1;
+        }
+      } else {
+        if (c.mate !== null && b.mate === null) {
+          if (c.mate > 0) {
+            return 1;
+          } else {
+            return -1;
+          }
+        }
+        if (b.mate !== null && c.mate === null) {
+          if (b.mate < 0) {
+            return 1;
+          } else {
+            return -1;
+          }
+        }
+        if (b.mate === null && c.mate === null) {
+          if (+b.depth === +c.depth) {
+            if (b.cp === c.cp) {
+              return 0;
+            } else if (b.cp > c.cp) {
+              return -1;
+            } else {
+              return 1;
+            }
+          }
+          if (+b.depth > +c.depth) {
+            return -1;
+          } else {
+            return 1;
+          }
+        }
+        if (b.mate < 0 && c.mate < 0) {
+          if (b.line.length === c.line.length) {
+            return 0;
+          } else if (b.line.length < c.line.length) {
+            return 1;
+          } else {
+            return -1;
+          }
+        }
+        if (b.mate > 0 && c.mate > 0) {
+          if (b.line.length === c.line.length) {
+            return 0;
+          } else if (b.line.length > c.line.length) {
+            return 1;
+          } else {
+            return -1;
+          }
+        }
+        if (b.mate < c.mate) {
+          return 1;
+        } else {
+          return -1;
+        }
+      }
     });
+  }
 }
-function createGameHook(ctor) {
-    ctor.prototype._createGame = ctor.prototype.createGame;
-    ctor.prototype.createGame = function (e) {
-        let result = this._createGame(e);
-        InitBetterMint(this);
-        return result;
-    };
+class h {
+  constructor(a, b) {
+    this.options = b;
+    this.game = new f(this, a);
+    this.engine = new g(this);
+    window.addEventListener("BetterMintUpdateOptions", a => {
+      this.options = a.detail;
+      this.game.UpdateExtensionOptions();
+      this.engine.UpdateExtensionOptions();
+      if (window.toaster && window.toaster.notifications.findIndex(a => a.id == "bettermint-settings-updated") == -1) {
+        window.toaster.add({
+          id: "bettermint-settings-updated",
+          duration: 2000,
+          icon: "circle-gearwheel",
+          content: "Settings updated!"
+        });
+      }
+    }, false);
+  }
+  onEngineLoaded() {
+    if (window.toaster) {
+      window.toaster.add({
+        id: "chess.com",
+        duration: 3000,
+        icon: "circle-info",
+        content: "BetterMint is enabled!"
+      });
+    }
+  }
 }
-
-customElements.whenDefined("wc-chess-board").then(function (ctor) {
-    window.ctor = ctor;
-    createGameHook(ctor);
+var i = function () {
+  var a = 0;
+  function b(b) {
+    var c = a++;
+    return new Promise(function (a, d) {
+      function e(b) {
+        if (b.detail.requestId == c) {
+          window.removeEventListener("BetterMintSendOptions", e);
+          a(b.detail.data);
+        }
+      }
+      window.addEventListener("BetterMintSendOptions", e);
+      const f = {
+        data: b,
+        id: c
+      };
+      const g = f;
+      var h = g;
+      const i = {
+        detail: h
+      };
+      const j = i;
+      window.dispatchEvent(new CustomEvent("BetterMintGetOptions", j));
+    });
+  }
+  const c = {
+    getData: b
+  };
+  const d = c;
+  return d;
+}();
+function j(b) {
+  fetch(Config.pathToEcoJson).then(function (b) {
+    return a(this, undefined, undefined, function* () {
+      let a = yield b.json();
+      c = new Map(a.map(a => [a.f, true]));
+    });
+  });
+  i.getData().then(function (a) {
+    try {
+      selfowner = new h(b, a);
+    } catch (a) {
+      console.error("oh noes selfowner didnt load");
+    }
+  });
+}
+function k(a) {
+  a.prototype._createGame = a.prototype.createGame;
+  a.prototype.createGame = function (a) {
+    let b = this._createGame(a);
+    j(this);
+    return b;
+  };
+}
+customElements.whenDefined("wc-chess-board").then(function (a) {
+  window.ctor = a;
+  k(a);
 }).catch(function () {
-    // This code will run if "wc-chess-board" is not defined
-    console.log("wc-chess-board not found. Using chess-board instead.");
+  console.log("wc-chess-board not found. Using chess-board instead.");
 });
-
-customElements.whenDefined("chess-board").then(function (ctor) {
-    window.ctor = ctor;
-    createGameHook(ctor);
+customElements.whenDefined("chess-board").then(function (a) {
+  window.ctor = a;
+  k(a);
 }).catch(function () {
-    console.log("chess-board not found.");
+  console.log("chess-board not found.");
 });
-
 window.onload = function () {
-    var url = window.location.href;
-
-    // Check if you're possibly in a game
-    if (url.includes('com/play/') || url.includes('com/game/') || url.includes('puzzle')) {
-        // Remove the side bar ad on load
-        var adElement = document.getElementById('board-layout-ad');
-        if (adElement) {
-            adElement.remove();
-        }
+  var a = window.location.href;
+  if (a.includes("com/play/") || a.includes("com/game/") || a.includes("com/puzzles/")) {
+    if (selfowner != undefined || selfowner != null) {
+      selfowner.game.CreateAnalysisTools();
     }
+    document.getElementById("board-layout-ad").remove();
+  }
 };
-
-
-
-function dragElement(elmnt) {
-    var pos1 = 0,
-        pos2 = 0,
-        pos3 = 0,
-        pos4 = 0;
-    if (document.getElementById(elmnt.id + "header")) {
-        // if present, the header is where you move the DIV from:
-        document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
-    } else {
-        // otherwise, move the DIV from anywhere inside the DIV:
-        elmnt.onmousedown = dragMouseDown;
-    }
-
-    function dragMouseDown(e) {
-        e = e || window.event;
-        e.preventDefault();
-        // get the mouse cursor position at startup:
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        document.onmouseup = closeDragElement;
-        // call a function whenever the cursor moves:
-        document.onmousemove = elementDrag;
-    }
-
-    function elementDrag(e) {
-        e = e || window.event;
-        e.preventDefault();
-        // calculate the new cursor position:
-        pos1 = pos3 - e.clientX;
-        pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        // set the element's new position:
-        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-    }
-
-    function closeDragElement() {
-        // stop moving when mouse button is released:
-        document.onmouseup = null;
-        document.onmousemove = null;
-    }
-}
-window.onmessage = function (event) {
-    console.log(event.data);
-    if (event.data == 'popout') {
-        let joe = document.createElement('div')
-        joe.id = "bmwparent";
-        joe.innerHTML = `
-    <div id="bmwindow">
-    <style>
-    @import url('https://fonts.googleapis.com/css?family=Comfortaa');
-    @import url('https://fonts.googleapis.com/css?family=Exo 2');
-    #bmtitle {
-        font-size: 240%;
-        margin: 0;
-        user-select: none;
-        height: 50px;
-        font-family: Comfortaa;
-        vertical-align: text-bottom;
-    }
-    #header-logo {
-        background-color: #202123;
-        width: 100%;
-        border-radius: 10px 10px 0px 0px;
-        height: 50px;
-        justify-content: center;
-        display: flex;
-    }
-    #bmwindow {
-        vertical-align: middle;
-        text-align: center;
-        font-family: "Exo 2";
-        margin: auto;
-        top: 1px;
-        border-radius: 10px;
-        height: 300px;
-        z-index: 6969420;
-        left: 1150px;
-        animation: fadein 0.5s linear forwards;
-        position: fixed;
-        background-color: #292A2D;
-        color: #ffffff;
-        padding: 0;
-        width: 500px;
-        margin: 0;
-    }
-    @keyframes fadein {
-        0% {
-            opacity: 0;
-        }
-
-        100% {
-            opacity: 1;
-        }
-    }
-    @keyframes fadeout {
-        0% {
-            opacity: 1;
-        }
-
-        100% {
-            opacity: 0;
-        }
-    }
-    #logo {
-        height: 50px;
-        margin-right: 0;
-        width: 50px;
-    }
-    #info {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        margin-top: 10px;
-    }
-    #moveinfo {
-        border-right: 1px solid #fff;
-        width: 125px;
-    }
-    all {
-        revert;
-    }
-    #wdl {
-        border-right: 1px solid #fff;
-        width: 125px;
-    }
-    #recalc {
-        fill: #fff;
-        display: block;
-        margin-top: 10px;
-        position: absolute;
-        transition: fill 0.5s ease;
-        margin-bottom: 10px;
-        margin-right: 10px;
-        height: 30px;
-        width: 30px;
-        cursor: pointer;
-        right: 10px;
-    }
-    #recalc:hover {
-        fill: #5d3fd3;
-        transition: fill 0.5s ease;
-    }
-    </style>
-    <div id="header-logo">
-        <div>
-            <img id='logo' src="https://idabest.tk/betterlogo.png">
-            <span id="bmtitle">BetterMint</span>
-        </div>
-            <svg id="recalc" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc. --><path d="M386.3 160H336c-17.7 0-32 14.3-32 32s14.3 32 32 32H464c17.7 0 32-14.3 32-32V64c0-17.7-14.3-32-32-32s-32 14.3-32 32v51.2L414.4 97.6c-87.5-87.5-229.3-87.5-316.8 0s-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 0-226.3s163.8-62.5 226.3 0L386.3 160z"/></svg>
-        </div>
-        <div id="info">
-            <div id="moveinfo">
-                <h2 class="infotitle">Move Info</h2>
-                <hr style="width: 100%;">
-                <div id="movescorecontainer">
-                    <span id="movescoreprefix">Evaluation Score: </span>
-                    <span id="movescore">Unavailable</span>
-                </div>
-            </div>
-            <div id="wdl">
-                <h2 class="wdltitle">WDL</h2>
-                <hr style="width: 100%;">
-                
-            </div>
-        </div>
-    </div>
-    `
-        if (document.getElementById('bmwindow') === null || document.getElementById('bmwindow') === undefined) {
-            document.body.appendChild(joe)
-            dragElement(document.getElementById('bmwindow'));
-            if (document.getElementById("movescore") !== null) {
-                if (smallestscore > 0) {
-                    document.getElementById('movescore').style.color = 'lightgreen';
-                    document.getElementById('movescore').innerHTML = '+' + wescore;
-                } else if (smallestscore < 0) {
-                    document.getElementById('movescore').style.color = 'red';
-                    document.getElementById('movescore').innerHTML = wescore;
-                }
-            }
-            if (mateInDigit !== false) {
-                if (document.getElementById("movescore") !== null) {
-                    if (textDigit.charAt(0) !== "-") {
-                        document.getElementById('movescore').style.color = 'lightgreen';
-                        document.getElementById('movescoreprefix').innerHTML = "Checkmate In: "
-                        if (mateInDigit !== 1) {
-                            document.getElementById('movescore').innerHTML = mateInDigit + ' Moves'
-                        } else if (mateInDigit === 1) {
-                            document.getElementById('movescore').innerHTML = mateInDigit + ' Move'
-                        }
-                    } else if (textDigit.charAt(0) === "-") {
-                        document.getElementById('movescore').innerHTML = textDigit;
-                        document.getElementById('movescore').style.color = 'red';
-                        document.getElementById('movescoreprefix').innerHTML = "Checkmate In: "
-                        if (mateInDigit !== 1) {
-                            document.getElementById('movescore').innerHTML = mateInDigit + ' Moves'
-                        } else if (mateInDigit === 1) {
-                            document.getElementById('movescore').innerHTML = mateInDigit + ' Move'
-                        }
-                    }
-                }
-            }
-        } else if (document.getElementById('bmwindow') !== null || document.getElementById('bmwindow') !== undefined) {
-            document.getElementById('bmwindow').style.animation = 'fadeout 0.5s linear forwards';
-            setTimeout(() => {
-                document.getElementById('bmwindow').style.display = "none";
-                document.getElementById('bmwparent').remove();
-            }, 500);
-
-        }
-    }
-}
-// Get the current WebRTC configuration of the browser
-const config = {
-    'iceServers': [],
-    'iceTransportPolicy': 'all',
-    'bundlePolicy': 'balanced',
-    'rtcpMuxPolicy': 'require',
-    'sdpSemantics': 'unified-plan',
-    'peerIdentity': null,
-    'certificates': []
+window.onmessage = function (a) {
+  console.log(a.data);
+  if (a.data == "popout") {
+    alert("sup");
+    let a = document.createElement("div");
+    a.innerHTML = "\n    <div id=\"bmwindow\">\n    <style>\n    @import url('https://fonts.googleapis.com/css?family=Comfortaa');\n    @import url('https://fonts.googleapis.com/css?family=Exo 2');\n    #bmtitle {\n        font-size: 240%;\n        font-family: Comfortaa;\n        vertical-align: middle;\n    }\n    #header-logo {\n        background-color: #202123;\n        width: 100%;\n    }\n    #bmwindow {\n        vertical-align: middle;\n        text-align: center;\n        font-family: \"Exo 2\";\n        margin: auto;\n        min-width: 300px;\n        min-height: 500px;\n        background-color: #292A2D;\n        color: #ffffff;\n        padding: 0;\n        width: 400px;\n        margin: 0;\n    }\n    all {\n        revert;\n    }\n    </style>\n    <div id=\"header-logo\">\n    <img src=\"https://idabest.tk/betterlogo.png\">\n    <span id=\"bmtitle\">BetterMint</span>\n    </div>\n    </div>\n    ";
+    document.body.appendChild(a);
+  }
 };
-// Set the WebRTC configuration options to block fingerprinting
-const constraints = {
-    'optional': [{
-        'googIPv6': false
-    }, {
-        'googDscp': false
-    }, {
-        'googCpuOveruseDetection': false
-    }, {
-        'googCpuUnderuseThreshold': 55
-    }, {
-        'googCpuOveruseThreshold': 85
-    }, {
-        'googSuspendBelowMinBitrate': false
-    }, {
-        'googScreencastMinBitrate': 400
-    }, {
-        'googCombinedAudioVideoBwe': false
-    }, {
-        'googScreencastUseTransportCc': false
-    }, {
-        'googNoiseReduction2': false
-    }, {
-        'googHighpassFilter': false
-    }, {
-        'googEchoCancellation3': false
-    }, {
-        'googExperimentalEchoCancellation': false
-    }, {
-        'googAutoGainControl2': false
-    }, {
-        'googTypingNoiseDetection': false
-    }, {
-        'googAutoGainControl': false
-    }, {
-        'googBeamforming': false
-    }, {
-        'googExperimentalNoiseSuppression': false
-    }, {
-        'googEchoCancellation': false
-    }, {
-        'googEchoCancellation2': false
-    }, {
-        'googNoiseReduction': false
-    }, {
-        'googExperimentalWebRtcEchoCancellation': false
-    }, {
-        'googRedundantRtcpFeedback': false
-    }, {
-        'googScreencastDesktopMirroring': false
-    }, {
-        'googSpatialAudio': false
-    }, {
-        'offerToReceiveAudio': false
-    }, {
-        'offerToReceiveVideo': false
-    }]
+const l = {
+  iceServers: []
 };
-Object.assign(config, constraints);
-const oldPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
-if (oldPeerConnection) {
-    window.RTCPeerConnection = function (config, constraints) {
-        const pc = new oldPeerConnection(config, constraints);
-        pc.getTransceivers = function () {
-            const transceivers = oldPeerConnection.prototype.getTransceivers.call(this);
-            for (const transceiver of transceivers) {
-                transceiver.stop();
-            }
-            return [];
-        };
-        return pc;
+l.iceTransportPolicy = "all";
+l.bundlePolicy = "balanced";
+l.rtcpMuxPolicy = "require";
+l.sdpSemantics = "unified-plan";
+l.peerIdentity = null;
+l.certificates = [];
+const m = l;
+const n = {
+  googIPv6: false
+};
+const o = {
+  googDscp: false
+};
+const p = {
+  googCpuOveruseDetection: false
+};
+const q = {
+  googCpuUnderuseThreshold: 55
+};
+const r = {
+  googCpuOveruseThreshold: 85
+};
+const s = {
+  googSuspendBelowMinBitrate: false
+};
+const t = {
+  googScreencastMinBitrate: 400
+};
+const u = {
+  googCombinedAudioVideoBwe: false
+};
+const v = {
+  googScreencastUseTransportCc: false
+};
+const w = {
+  googNoiseReduction2: false
+};
+const x = {
+  googHighpassFilter: false
+};
+const y = {
+  googEchoCancellation3: false
+};
+const z = {
+  googExperimentalEchoCancellation: false
+};
+const A = {
+  googAutoGainControl2: false
+};
+const B = {
+  googTypingNoiseDetection: false
+};
+const C = {
+  googAutoGainControl: false
+};
+const D = {
+  googBeamforming: false
+};
+const E = {
+  googExperimentalNoiseSuppression: false
+};
+const F = {
+  googEchoCancellation: false
+};
+const G = {
+  googEchoCancellation2: false
+};
+const H = {
+  googNoiseReduction: false
+};
+const I = {
+  googExperimentalWebRtcEchoCancellation: false
+};
+const J = {
+  googRedundantRtcpFeedback: false
+};
+const K = {
+  googScreencastDesktopMirroring: false
+};
+const L = {
+  googSpatialAudio: false
+};
+const M = {
+  offerToReceiveVideo: false
+};
+const N = {
+  optional: [n, o, p, q, r, s, t, u, v, w, x, y, z, A, B, C, D, E, F, G, H, I, J, K, L, {
+    offerToReceiveAudio: false
+  }, M]
+};
+const O = N;
+Object.assign(m, O);
+const P = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+if (P) {
+  window.RTCPeerConnection = function (a, b) {
+    const c = new P(a, b);
+    c.getTransceivers = function () {
+      const a = P.prototype.getTransceivers.call(this);
+      for (const b of a) {
+        b.stop();
+      }
+      return [];
     };
+    return c;
+  };
 }
-window.addEventListener('bm', function (event) { // get
-    if (event.source === window && event.data) {
-        this.alert('best move: ' + event)
-    }
+window.addEventListener("bm", function (a) {
+  if (a.source === window && a.data) {
+    this.alert("best move: " + a);
+  }
 }, false);
