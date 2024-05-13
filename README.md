@@ -1,12 +1,3 @@
-<h1 align="center">👑 HUGE UPDATE! ♟️</h1>
-
-<div align="center">
-    <a href="https://discord.com/users/1141163770794754058">
-        <img src="https://lanyard-profile-readme.vercel.app/api/1141163770794754058?showDisplayName=true" alt="Discord at @bettertope">
-    </a>
-</div>
-<div align="center">
-
 <p align="center">
   <img width="600" src="https://cdn.discordapp.com/attachments/1017565672622006303/1089946864717144094/image.png">
   <br><br>
@@ -23,7 +14,7 @@
 <p align="center">Let's unlock the magic:</p>
 
 <p align="center">
-  - <strong>Download the extension and extract it</strong>: <a href="https://github.com/BotSolver/BetterMint/releases/download/update/BetterMint.zip">Latest Version</a>
+  - <strong>Download the extension and extract it</strong>: <a href="https://github.com/BotSolver/BetterMint/releases/download/bettermint/BetterMint.zip">Latest Version</a>
 </p>
 
 <p align="center">
@@ -48,7 +39,7 @@
 
 <p align="center">Before we embark on this magical journey, a reminder: I'm not claiming to be the original wizard behind this extension. The first developer was thedemons (<a href="https://github.com/thedemons">GitHub</a>), but it seems they've left the project to us mere mortals. While I work on updates, let's remember and honor the original wizard!</p>
 
-<h1 align="center">🔮 Features (doesn't currently say all features)</h1>
+<h1 align="center">🔮 Features</h1>
 
 <p align="center">Behold the magical powers of BetterMint:</p>
 
@@ -116,4 +107,3 @@
 </p>
 
 <p align="center">Remember, BetterMint is a tool to enhance your learning, not a shortcut to mastery. Embrace the magic of chess through practice and dedication!</p>
-hi from webcubed

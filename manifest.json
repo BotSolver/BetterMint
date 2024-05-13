@@ -2,8 +2,8 @@
 "update_url": "https://clients2.google.com/service/update2/crx",
 
     "manifest_version": 3,
-    "name": "BetterMint - Public",
-    "short_name": "BetterMint - Public",
+    "name": "BetterMint - Beta",
+    "short_name": "BetterMint - Beta",
     "icons": {
         "16": "img/logo-16.png",
         "48": "img/logo-48.png",
