@@ -1,9 +1,5 @@
-Sure, here is a revised README file with enhanced installation instructions and proper credits:
-
----
-
 <p align="center">
-  <img width="600" src="https://cdn.discordapp.com/attachments/1017565672622006303/1089946864717144094/image.png">
+  <img width="600" src="https://i.ibb.co/6Pz1c3B/1-background.png">
   <br><br>
   <a href="https://discord.gg/basic"><img alt="BetterMint Discord" src="https://img.shields.io/badge/Discord-BetterMint-0?style=flat&logo=discord"></a>
   <a href="https://github.com/BotSolver/BetterMint/releases"><img alt="Download BetterMint" src="https://img.shields.io/github/downloads/BotSolver/BetterMint/total?color=%2331c754&label=Download&logo=googlechrome&logoColor=%23ffffff"></a>
@@ -69,13 +65,9 @@ Sure, here is a revised README file with enhanced installation instructions and 
 <p align="center">This project is a collaborative effort made possible by the contributions of:</p>
 <p align="center">
   - <a href="https://github.com/thedemons">thedemons</a> - Original Creator<br>
-  - <a href="https://github.com/Webcubed">Webcubed</a> - Development and Updates<br>
+  - <a href="https://github.com/Webcubed">Webcubed</a> - Development<br>
   - <a href="https://github.com/HotaVN">HotaVN</a> - Development and Improvements<br>
-  - <a href="https://github.com/your-username">Your Name</a> - Development and Maintenance
+  - <a href="https://github.com/BetterMint">Your Name</a> - Own Development and Maintenance
 </p>
 
 <p align="center">Remember, BetterMint V2 is a tool to enhance your learning and enjoyment of chess. Embrace the journey to mastery through practice and dedication!</p>
-
----
-
-This updated README file includes detailed installation instructions and credits for all contributors. Let me know if any further adjustments are needed!
