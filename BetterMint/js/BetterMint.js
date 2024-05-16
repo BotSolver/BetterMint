@@ -109,6 +109,7 @@ var enumOptions = {
   MultiPV: "option-multipv",
   HighMateChance: "option-highmatechance",
   AutoMoveTime: "option-auto-move-time",
+  AutoMoveTimeRandom: "option-auto-move-time-random",
   AutoMoveTimeRandomDiv: "option-auto-move-time-random-div",
   AutoMoveTimeRandomMulti: "option-auto-move-time-random-multi",
   LegitAutoMove: "option-legit-auto-move",
