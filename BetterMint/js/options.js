@@ -1,4 +1,5 @@
 "use strict";
+
 let inputObjects = {
   "option-url-api-stockfish": {
     default_value: "ws://localhost:8000/ws",
@@ -77,7 +78,7 @@ function RestoreOptions() {
   chrome.storage.sync.get(DefaultExtensionOptions, function (opts) {
     let options = opts;
     for (let key in inputObjects) {
-      if (inputObjects[key].inputField !== null) {
+      if (inputObjects[key].inputField !== null && inputObjects[key].inputField !== undefined) {
         if (
           inputObjects[key].inputField.type == "checkbox" &&
           inputObjects[key].inputField.checked !== undefined
@@ -97,12 +98,14 @@ function RestoreOptions() {
 function OnOptionsChange() {
   let options = {};
   for (let key in inputObjects) {
-    if (inputObjects[key].inputField.type === "checkbox") {
-      options[key] = inputObjects[key].inputField.checked;
-    } else if (inputObjects[key].inputField.type === "range"){
-      options[key] = parseInt(inputObjects[key].inputField.value);
-    } else if (inputObjects[key].inputField.type === "text"){
-      options[key] = inputObjects[key].inputField.value;
+    if (inputObjects[key].inputField !== null && inputObjects[key].inputField !== undefined) {
+      if (inputObjects[key].inputField.type === "checkbox") {
+        options[key] = inputObjects[key].inputField.checked;
+      } else if (inputObjects[key].inputField.type === "range") {
+        options[key] = parseInt(inputObjects[key].inputField.value);
+      } else if (inputObjects[key].inputField.type === "text") {
+        options[key] = inputObjects[key].inputField.value;
+      }
     }
   }
 
@@ -126,6 +129,7 @@ function InitOptions() {
     fill: "#5d3fd3",
     background: "rgba(255, 255, 255, 0.214)",
   };
+
   document.querySelectorAll(".options-slider").forEach(function (slider) {
     const title = slider.querySelector(".title");
     const input = slider.querySelector("input");
@@ -145,20 +149,22 @@ function InitOptions() {
       if (!event.disableUpdate) OnOptionsChange();
     });
   });
+
   document.querySelectorAll(".options-checkbox").forEach(function (checkbox) {
     checkbox.addEventListener("change", function () {
       OnOptionsChange();
     });
   });
-  document.querySelectorAll(".options-text").forEach(function (checkbox) {
-    checkbox.addEventListener("change", function () {
+
+  document.querySelectorAll(".options-text").forEach(function (text) {
+    text.addEventListener("change", function () {
       OnOptionsChange();
     });
   });
+
   RestoreOptions();
 }
 
-// Export configuration as JSON file Wait for the DOM to finish loading
 window.onload = function () {
   chrome.storage.local.get(["theme"]).then((result) => {
     if (result.theme === "d") {
@@ -173,6 +179,7 @@ window.onload = function () {
       )[0].style.backgroundColor = "#000";
     }
   });
+
   document.getElementById("popoutb").addEventListener("click", function () {
     chrome.tabs.query({}, function (tabs) {
       tabs.forEach(function (tab) {
@@ -182,8 +189,8 @@ window.onload = function () {
         });
       });
     });
-  }); // dispatch popout event to content script
-  // theme thing
+  });
+
   document.getElementById("ultradark").addEventListener("click", function () {
     chrome.storage.local.set({
       theme: "ud",
@@ -193,6 +200,7 @@ window.onload = function () {
       "settings-content"
     )[0].style.backgroundColor = "#000";
   });
+
   document.getElementById("dark").addEventListener("click", function () {
     chrome.storage.local.set({
       theme: "d",
@@ -202,13 +210,14 @@ window.onload = function () {
       "settings-content"
     )[0].style.backgroundColor = "#292A2D";
   });
-  // settings modal thing
+
   document.getElementById("settingsb").addEventListener("click", function () {
     document.getElementsByClassName("ModalBackground")[0].style.animation =
       "fadein 0.5s linear forwards";
     document.getElementsByClassName("ModalBackground")[0].style.display =
       "block";
   });
+
   document
     .getElementsByClassName("ModalBackground")[0]
     .addEventListener("click", function (event) {
@@ -223,6 +232,7 @@ window.onload = function () {
         }, 500);
       }
     });
+
   document
     .getElementsByClassName("close")[0]
     .addEventListener("click", function () {
@@ -233,12 +243,13 @@ window.onload = function () {
           "none";
       }, 500);
     });
-  // amazin
+
   document.getElementById("learnmore").addEventListener("click", function () {
     document.getElementsByClassName("lmco")[0].style.animation =
       "fadein 0.5s linear forwards";
     document.getElementsByClassName("lmco")[0].style.display = "block";
   });
+
   document
     .getElementsByClassName("lmco")[0]
     .addEventListener("click", function (event) {
@@ -250,6 +261,7 @@ window.onload = function () {
         }, 500);
       }
     });
+
   document.getElementById("lmc").addEventListener("click", function () {
     document.getElementsByClassName("lmco")[0].style.animation =
       "fadeout 0.5s linear forwards";
@@ -257,64 +269,6 @@ window.onload = function () {
       document.getElementsByClassName("lmco")[0].style.display = "none";
     }, 500);
   });
-  // Get references to the buttons and file input
-  const exportBtn = document.getElementById("export-btn");
-  const importBtn = document.getElementById("import-btn");
-  const importFileInput = document.getElementById("import-file-input");
-  document.getElementById("export-btn").addEventListener("click", function () {
-    let options = {};
-    for (let key in inputObjects) {
-      if (inputObjects[key].inputField.type === "checkbox") {
-        options[key] = inputObjects[key].inputField.checked;
-      } else if (inputObjects[key].inputField.type === "range"){
-        options[key] = parseInt(inputObjects[key].inputField.value);
-      } else if (inputObjects[key].inputField.type === "text"){
-        options[key] = inputObjects[key].inputField.value;
-      }
-    }
 
-    const dataStr =
-      "data:text/json;charset=utf-8," +
-      encodeURIComponent(JSON.stringify(options));
-    const downloadAnchorNode = document.createElement("a");
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "BetterMint.config");
-    document.body.appendChild(downloadAnchorNode); // required for firefox
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-  });
-  // Import configuration from JSON file
-  document.getElementById("import-btn").addEventListener("click", function () {
-    document.getElementById("import-file-input").click();
-  });
-  document
-    .getElementById("import-file-input")
-    .addEventListener("change", function () {
-      const file = this.files[0];
-      const reader = new FileReader();
-      reader.onload = function (event) {
-        const options = JSON.parse(event.target.result);
-        // Update config variables from input fields
-        for (let key in inputObjects) {
-          if (inputObjects[key].inputField.type === "checkbox") {
-            document.getElementById(key).checked = options[key];
-          } else {
-            document.getElementById(key).value = options[key];
-          }
-        }
-
-        // Do something with the updated options object here
-        chrome.storage.sync.set(options);
-        chrome.tabs.query({}, function (tabs) {
-          tabs.forEach(function (tab) {
-            chrome.tabs.sendMessage(tab.id, {
-              type: "UpdateOptions",
-              data: options,
-            });
-          });
-        });
-      };
-      reader.readAsText(file);
-    });
+  InitOptions();
 };
-document.addEventListener("DOMContentLoaded", InitOptions);

@@ -469,15 +469,6 @@ class StockfishEngine {
       "Slow Mover": "10",
     };
 
-    if (getValueConfig(enumOptions.UseNNUE)) {
-      this.options["Use NNUE"] = true;
-      if (!getValueConfig(enumOptions.ApiStockfish)) {
-        this.options["EvalFile"] = stockfishPathConfig.multiThreaded.nnue;
-      } else {
-        this.options["EvalFile"] = "nnue\nn-5af11540bbfe.17051dfd.nnue";
-      }
-    }
-
     if (!getValueConfig(enumOptions.ApiStockfish)) {
       try {
         new SharedArrayBuffer(getValueConfig(enumOptions.HashtableRam));
