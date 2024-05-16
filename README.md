@@ -67,7 +67,7 @@
   - <a href="https://github.com/thedemons">thedemons</a> - Original Creator<br>
   - <a href="https://github.com/Webcubed">Webcubed</a> - Development<br>
   - <a href="https://github.com/HotaVN">HotaVN</a> - Development and Improvements<br>
-  - <a href="https://github.com/BetterMint">BetterMint</a> - Own Development and Maintenance
+  - <a href="https://github.com/BotSolver">BetterMint</a> - Own Development and Maintenance
 </p>
 
 <p align="center">Remember, BetterMint V2 is a tool to enhance your learning and enjoyment of chess. Embrace the journey to mastery through practice and dedication!</p>
