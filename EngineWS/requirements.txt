@@ -1,0 +1,4 @@
+fastapi
+tk
+asyncio
+uvicorn

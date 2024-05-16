@@ -1,0 +1,63 @@
+{
+    "manifest_version": 3,
+    "name": "BetterMint V2",
+    "short_name": "BetterMint V2",
+    "icons": {
+        "16": "img/logo-16.png",
+        "48": "img/logo-48.png",
+        "128": "img/logo-128.png"
+    },
+    "version": "2.0.0",
+    "description": "BetterMint is a tool that helps you get better at chess.",
+    "permissions": [
+        "storage",
+        "declarativeNetRequest"
+    ],
+    "host_permissions": [
+        "http://*.chess.com/*",
+        "https://*.chess.com/*"
+    ],
+    "content_scripts": [
+        {
+            "js": [
+                "js/loader.js"
+            ],
+            "css": [
+                "css/depthbar.css",
+                "css/evalbar.css",
+                "css/material-icon.css"
+            ],
+            "matches": [
+                "https://*.chess.com/*"
+            ],
+            "run_at": "document_start"
+        }
+    ],
+    "declarative_net_request": {
+        "rule_resources": [
+            {
+                "id": "ruleset_1",
+                "enabled": true,
+                "path": "rules.json"
+            }
+        ]
+    },
+    "action": {
+        "default_popup": "html/options.html"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "js/BetterMint.js",
+                "html/options.html"
+            ],
+            "matches": [
+                "https://*.chess.com/*"
+            ]
+        }
+    ],
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self';",
+        "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';"
+    }
+}

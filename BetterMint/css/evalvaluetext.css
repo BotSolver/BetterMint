@@ -1,0 +1,18 @@
+.chessboard .arrow {
+    position: relative;
+}
+
+.chessboard .arrow::after {
+    content: attr(data-text);
+    position: absolute;
+    top: -1.5em;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8em;
+    background-color: white;
+    border: 1px solid black;
+    padding: 0.2em;
+    border-radius: 0.5em;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
