@@ -24,7 +24,7 @@
   - <strong>Extract the downloaded BetterMint V2.zip file</strong> to a directory of your choice.
 </p>
 <p align="center">
-  - <strong>Run the setup script</strong>: Navigate to the <code>EngineWS</code> folder within the extracted directory and run <code>run.bat</code>.
+  - <strong>Run the setup script</strong>: Navigate to the <code>EngineWS</code> folder within the extracted directory and run <code>run.bat</code> and select a UCI engine exe file.
 </p>
 
 <h3 align="center">2. Set Up the Extension</h3>
