@@ -106,4 +106,4 @@ window.addEventListener("BetterMintGetOptions", function (evt) {
     );
   });
 });
-injectScript("js/BetterMint.js"); // Injects BetterMint.js Web-side
+injectScript("js/Mint.js"); // Injects BetterMint.js Web-side

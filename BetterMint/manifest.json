@@ -48,7 +48,7 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "js/BetterMint.js",
+                "js/Mint.js",
                 "html/options.html"
             ],
             "matches": [
