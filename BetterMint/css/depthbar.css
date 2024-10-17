@@ -1,11 +1,11 @@
-.depthBarLayout {
+.depthBarLayoutt {
     display: grid;
     grid-template-columns: [evaluation] var(--evalAndGutter) [pieces] var(--piecesWidth) [board] var(--boardContainerWidth) [board-controls] var(--boardControlsWidth);
     margin: -5px 0 5px auto;
     position: relative;
 }
 
-.depthBarLayout .depthBar {
+.depthBarLayoutt .depthBarr {
     grid-column: board;
     height: 5px !important;
     width: var(--boardWidth) !important;
@@ -15,7 +15,7 @@
     background: #403d39;
 }
 
-.depthBar .depthBarProgress {
+.depthBarr .depthBarProgress {
     display: block;
     height: 100%;
     width: 0%;

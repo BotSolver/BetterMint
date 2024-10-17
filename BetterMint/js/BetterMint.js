@@ -249,8 +249,8 @@ class GameController {
       if (getValueConfig(enumOptions.DepthBar) && this.depthBar == null) {
         // create depth bar
         let depthBar = document.createElement("div");
-        depthBar.classList.add("depthBarLayout");
-        depthBar.innerHTML = `<div class="depthBar"><span class="depthBarProgress"></span></div>`;
+        depthBar.classList.add("depthBarLayoutt");
+        depthBar.innerHTML = `<div class="depthBarr"><span class="depthBarProgress"></span></div>`;
         layoutMain.insertBefore(depthBar, layoutChessboard.nextSibling);
         this.depthBar = depthBar.querySelector(".depthBarProgress");
       }
@@ -395,7 +395,7 @@ class GameController {
     if (getValueConfig(enumOptions.DepthBar)) {
       let depthPercent =
         ((isBestMove ? bestMove.depth : bestMove.depth - 1) /
-          this.BetterMintmaster.engine.depth) *
+          getValueConfig(enumOptions.Depth)) *
         100;
       this.SetCurrentDepth(depthPercent);
     }
@@ -468,6 +468,7 @@ class StockfishEngine {
     this.options = {
       // "Move Overhead": "",
       "Slow Mover": "10",
+      "MultiPV": getValueConfig(enumOptions.MultiPV),
     };
 
     if (!getValueConfig(enumOptions.ApiStockfish)) {
