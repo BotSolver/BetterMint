@@ -1075,13 +1075,15 @@ event named "BetterMintSendOptions" with the requested data. The `requestId` var
 uniquely identify each request and match the response to the correct request. */
 
 function InitBetterMint(chessboard) {
+  // Fetch the ECO table
   fetch(Config.pathToEcoJson).then(function (response) {
     return __awaiter(this, void 0, void 0, function* () {
       let table = yield response.json();
       eTable = new Map(table.map((data) => [data.f, true]));
     });
   });
-  // get the extension options
+
+  // Get the extension options
   ChromeRequest.getData().then(function (options) {
     try {
       BetterMintmaster = new BetterMint(chessboard, options);
@@ -1103,43 +1105,31 @@ function InitBetterMint(chessboard) {
         }
       });
     } catch (e) {
-      // console.error(e); hehe no error today
-      console.error("oh noes BetterMintmaster didnt load");
+      console.error("Oh noes! BetterMintmaster didn't load");
     }
   });
 }
 
-// let chessboardDebug = null;
-function createGameHook(ctor) {
-  ctor.prototype._createGame = ctor.prototype.createGame;
-  ctor.prototype.createGame = function (e) {
-    let result = this._createGame(e);
-    InitBetterMint(this);
-    // chessboardDebug = this;
-    return result;
-  };
-}
-
-customElements
-  .whenDefined("wc-chess-board")
-  .then(function (ctor) {
-    window.ctor = ctor;
-    createGameHook(ctor);
+const observer = new MutationObserver(async function (mutations) {
+  mutations.forEach(async function (mutation) {
+    mutation.addedNodes.forEach(async function (node) {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        if (node.tagName == "WC-CHESS-BOARD" || node.tagName == "CHESS-BOARD") {
+          if (Object.hasOwn(node, "game")) {
+            InitBetterMint(node);
+            observer.disconnect();
+          }
+        }
+      }
+    })
   })
-  .catch(function () {
-    // This code will run if "wc-chess-board" is not defined
-    console.log("wc-chess-board not found. Using chess-board instead.");
-  });
+});
 
-customElements
-  .whenDefined("chess-board")
-  .then(function (ctor) {
-    window.ctor = ctor;
-    createGameHook(ctor);
-  })
-  .catch(function () {
-    console.log("chess-board not found.");
-  });
+observer.observe(document, {
+  childList: true,
+  subtree: true
+});
+
 
 // Get the current WebRTC configuration of the browser
 const config = {
