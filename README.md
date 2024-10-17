@@ -1,7 +1,7 @@
 <p align="center">
   <img width="600" src="https://i.ibb.co/6Pz1c3B/1-background.png">
   <br><br>
-  <a href="https://discord.gg/basic"><img alt="BetterMint Discord" src="https://img.shields.io/badge/Discord-BetterMint-0?style=flat&logo=discord"></a>
+  <a href="https://discord.gg/bettermint-free-chess-learning-development-1098267851732815932"><img alt="BetterMint Discord" src="https://img.shields.io/badge/Discord-BetterMint-0?style=flat&logo=discord"></a>
   <a href="https://github.com/BotSolver/BetterMint/releases"><img alt="Download BetterMint" src="https://img.shields.io/github/downloads/BotSolver/BetterMint/total?color=%2331c754&label=Download&logo=googlechrome&logoColor=%23ffffff"></a>
 </p>
 
